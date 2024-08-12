@@ -1,0 +1,145 @@
+const UserModel = require("../../models/UserModel");
+const apiResponse = require("../../helpers/apiResponse");
+// const utility = require("../../helpers/utility");
+const jwt = require("jsonwebtoken");
+// const mailer = require("../../helpers/mailer");
+const path = require('path')
+const { generateToken } = require('../../util/jwtUtils');
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+const bcrypt = require("bcryptjs");
+
+
+
+// const TrackModel = require("../../models/TrackModel");
+
+const userProfile = async(req, res) => {
+	
+	try {
+		const authToken = req.headers.authorization;
+		const decoded = jwt.decode(authToken);
+		// console.log("decode data is",decoded);
+
+		const userDetails = await UserModel.findOne({_id : decoded.userId});
+		
+		if (userDetails) {
+			
+			if(userDetails.status) {
+
+				return apiResponse.successResponseWithData(res,"User Profile.", userDetails);
+				
+			}else {
+				return apiResponse.unauthorizedResponse(res, "Account is not active. Please contact admin.");
+			}	
+			
+		}else{
+			return apiResponse.unauthorizedResponse(res,"User not found.", "");
+		}
+		
+		
+	} catch (err) {
+		console.log(err)
+		return apiResponse.ErrorResponse(res, err);
+	}
+}
+
+const updateUserProfile = async(req, res) => {
+	
+	try {
+		const { firstName, lastName} = req.body;
+		
+		const authToken = req.headers.authorization;
+		const decoded = jwt.decode(authToken);
+		
+		
+		const userDetails = await UserModel.findOne({_id : decoded.userId});
+		
+		if (userDetails) {
+			
+			if(userDetails.status) {
+
+				userDetails.firstName = firstName;
+				userDetails.lastName = lastName;
+
+				userDetails.save();
+
+				return apiResponse.successResponseWithData(res,"User profile updated.", userDetails);
+				
+			}else {
+				return apiResponse.unauthorizedResponse(res, "Account is not active. Please contact admin.");
+			}	
+			
+		}else{
+			return apiResponse.unauthorizedResponse(res,"User not found.", "");
+		}
+		
+		
+	} catch (err) {
+		console.log(err)
+		return apiResponse.ErrorResponse(res, err);
+	}
+}
+
+
+const signUp = async(req, res) => {
+	
+	try {
+		
+		const {firstName, lastName, mobileNo, password, deviceId} = req.body;
+		otp = '123456';
+		const existingUser = await UserModel.findOne({ $or: [{ mobileNo }] });
+		
+		if (existingUser) {
+            return apiResponse.validationErrorWithData(res, 'Email or mobile number already exists');
+        }
+		const newUser = new UserModel({
+            firstName,
+            lastName,
+            mobileNo,
+            password,
+            otp,
+            deviceId
+        });
+
+        // Save user to database
+        await newUser.save();
+		return apiResponse.successResponseWithData(res,"Registration Success.", newUser, 0);
+	} catch (err) {
+		return apiResponse.ErrorResponse(res, err);
+	}
+};
+
+const login = async(req, res) => {
+	const { mobileNo, password, deviceId } = req.body;
+
+    try {
+        // Check if the user exists
+        const user = await UserModel.findOne({ mobileNo });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Validate password
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+
+		const userDevice = await UserModel.findOne({ mobileNo, deviceId });
+		if (!userDevice) {
+            return res.status(404).json({ message: 'Please login on same device or contact to app admin' });
+        }
+
+        // Generate JWT token
+        const token = generateToken(user._id);
+
+        // Return token and user details
+        res.status(200).json({ token, user: { _id: user._id, firstName: user.firstName, lastName: user.lastName } });
+    } catch (error) {
+		console.log(error);
+        res.status(500).json({ message: 'Failed to login' });
+    }
+}
+
+module.exports = { signUp, login, userProfile, updateUserProfile}
