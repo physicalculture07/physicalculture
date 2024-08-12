@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 
 const cors = require("cors");
 const path = require('path')
-// const fs = require("fs");
+const fs = require("fs");
 const http = require("http");
 var https = require("https");
 const mongoose = require('mongoose');
@@ -32,6 +32,6 @@ const options = {
 };
 
 //https.createServer(app);
-https.createServer(app).listen(process.env.PORT, () => {
+https.createServer(options,app).listen(process.env.PORT, () => {
     console.log('Server is running');
 })
