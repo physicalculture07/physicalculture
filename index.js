@@ -5,6 +5,7 @@ const cors = require("cors");
 const path = require('path')
 // const fs = require("fs");
 const http = require("http");
+var https = require("https");
 const mongoose = require('mongoose');
 
 require('dotenv').config({ path: path.resolve(__dirname, './.env') });
@@ -24,7 +25,13 @@ app.use("/", apiRoRouter)
 app.use("/admin/", adminRouter)
 
 
+const options = {
+    key: fs.readFileSync(path.join(__dirname, 'certificates', 'private.key')),
+    cert: fs.readFileSync(path.join(__dirname, 'certificates', 'certificate.crt')),
+    ca: fs.readFileSync(path.join(__dirname, 'certificates', 'ca_bundle.crt'))
+};
 
-http.createServer(app).listen(process.env.PORT, () => {
+//https.createServer(app);
+https.createServer(app).listen(process.env.PORT, () => {
     console.log('Server is running');
 })
