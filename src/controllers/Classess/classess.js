@@ -1,6 +1,13 @@
 const ClassModel = require('../../models/ClassModel')
 const apiResponse = require("../../helpers/apiResponse");
 const CourseModel = require('../../models/CourseModel');
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { Upload } = require('@aws-sdk/lib-storage');
+const { readFileSync } = require('fs');
+const fs = require('fs');
+
+// const { fromIni } = require('@aws-sdk/credential-providers');
+
 require('dotenv').config();
 
 // Start multipart upload
@@ -121,33 +128,89 @@ const deleteClassesById = async (req, res) => {
 	}
 };
 
+// const spacesEndpoint = new AWS.Endpoint('https://physicalcultureclassess.blr1.digitaloceanspaces.com'); // Replace 'nyc3' with your region
+// const s3Client = new AWS.S3({
+//     endpoint: spacesEndpoint,
+//     accessKeyId: 'DO009L2UXDWVYDHFTDAQ',  // Replace with your access key
+//     secretAccessKey: 'w8ZHZI0v9g7cJdfMj53yLplXgIqAfLvLDwYoEGlXGSs',  // Replace with your secret key
+// });
+
+const s3Client = new S3Client({
+    forcePathStyle: false, // Configures to use subdomain/virtual calling format.
+    endpoint: "https://blr1.digitaloceanspaces.com",
+    region: "BLR1",
+    credentials: {
+      accessKeyId: "DO009L2UXDWVYDHFTDAQ",
+      secretAccessKey: "w8ZHZI0v9g7cJdfMj53yLplXgIqAfLvLDwYoEGlXGSs"
+    }
+});
 
 const createClass = async (req, res, next) => {
+	// console.log("asduashfjkhsdkjf");
 	try {
 	  const { courseId, className } = req.body;
-	  const classVideo = req.files['classVideo'] ? req.files['classVideo'][0].path : null;
+	  const classVideo = req.files['classVideo'] ? req.files['classVideo'][0].location : null;
 	  const classNotes = req.files['classNotes'] ? req.files['classNotes'][0].path : null;
-  
-	  // Check if the course exists
 	  const course = await CourseModel.findById(courseId);
 	  if (!course) {
 		return res.status(404).json({ message: 'Course not found' });
 	  }
-  
-	  // Create new class
-	  const newClass = new ClassModel({
-		courseId,
-		className,
-		classVideo,
-		classNotes,
-	  });
-  
-	  const savedClass = await newClass.save();
-	  res.status(201).json(savedClass);
+
+	//   console.log("sdad------", req.files );
+	if(classVideo){
+		/*const fileContent = fs.createReadStream(classVideo);
+		// Set the parameters for the upload
+		const uploadParams = {
+			Bucket: "physicalcultureclassess",
+			Key: 'classes/ayz.mp4',  // The name you want to give to the file in the bucket
+			Body: fileContent,
+			ACL: 'public-read',  // Set permissions (optional)
+			ContentType: 'video/mp4'  // Set the appropriate content type (adjust as needed)
+		};
+
+		// Use the Upload class from AWS SDK v3 to handle the upload
+		const parallelUpload = new Upload({
+			client: s3Client,
+			params: uploadParams
+		});
+
+		// Monitor the progress of the upload
+		parallelUpload.on('httpUploadProgress', (progress) => {
+			console.log(`Uploaded: ${progress.loaded} / ${progress.total}`);
+		});
+
+		// Upload the video
+		const data = await parallelUpload.done();
+		console.log(`Video uploaded successfully at ${data.Location}`);*/
+		// Create new class
+		const newClass = new ClassModel({
+			courseId,
+			className,
+			classVideo,
+			classNotes,
+		  });
+	  
+		  const savedClass = await newClass.save();
+		  res.status(201).json(savedClass);
+	}else{
+		// Create new class
+		const newClass = new ClassModel({
+			courseId,
+			className,
+			classVideo,
+			classNotes,
+		  });
+	  
+		  const savedClass = await newClass.save();
+		  res.status(201).json(savedClass);
+	}
 	} catch (error) {
 		console.log(error);
 	  res.status(500).json({ message: error });
 	}
-  };
+};
+
+
+
 
 module.exports = { uploadClassStart,  uploadClassPart, uploadClassComplete, getClasses, getClassById, updateClassesById, deleteClassesById, createClass}

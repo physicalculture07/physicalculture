@@ -2,6 +2,11 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const { mkdir } = require("fs/promises");
+// const upload = multer({ dest: 'uploads/' });
+
+const multerS3 = require('multer-s3');
+const { S3Client } = require('@aws-sdk/client-s3');
+
 
 const folderpath = {
   productImage: "uploads/product_images",
@@ -246,4 +251,28 @@ const classStorage = multer.diskStorage({
 const classUpload = multer({ storage: classStorage });
 
 
-module.exports = { homeSlideUpload, shopUpload, productUpload, bannerUpload, fileUploadDirectoryCheck, brandUpload, categoryUpload, masterCategoryUpload, blogUpload, forumUpload, testSeriesPdfUpload, syllabusPdfUpload, previousPapersUpload, pdfNotesUpload, classUpload };
+const s3Client = new S3Client({
+  forcePathStyle: false, // Configures to use subdomain/virtual calling format.
+  endpoint: "https://blr1.digitaloceanspaces.com",
+  region: "BLR1",
+  credentials: {
+    accessKeyId: "DO009L2UXDWVYDHFTDAQ",
+    secretAccessKey: "w8ZHZI0v9g7cJdfMj53yLplXgIqAfLvLDwYoEGlXGSs"
+  }
+});
+
+const upload = multer({
+  storage: multerS3({
+      s3: s3Client,
+      bucket: 'physicalcultureclassess',
+      acl: 'public-read', // Set the appropriate permissions
+      key: function (req, file, cb) {
+          cb(null, `classes/${Date.now()}_${file.originalname}`); // Customize the file key
+      }
+  })
+});
+
+
+
+
+module.exports = { homeSlideUpload, shopUpload, productUpload, bannerUpload, fileUploadDirectoryCheck, brandUpload, categoryUpload, masterCategoryUpload, blogUpload, forumUpload, testSeriesPdfUpload, syllabusPdfUpload, previousPapersUpload, pdfNotesUpload, classUpload , upload};

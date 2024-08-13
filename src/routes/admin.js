@@ -1,6 +1,6 @@
 var express = require("express");
 // const { isAuth } = require("../middlewares/auth");
-const { classUpload, pdfNotesUpload, previousPapersUpload, syllabusPdfUpload, testSeriesPdfUpload } = require("../helpers/fileUploader");
+const { classUpload, pdfNotesUpload, previousPapersUpload, syllabusPdfUpload, testSeriesPdfUpload, upload } = require("../helpers/fileUploader");
 
 
 const courses = require("../controllers/Course/courses");
@@ -19,7 +19,8 @@ var router = express.Router();
 // router.post("/admin/createCategory", isAuth, categoryUpload.array('categoryImage'), category.createCategory);
 
 router.post("/create_course", courses.createCourse);
-router.post('/create_class', classUpload.fields([{ name: 'classVideo', maxCount: 1 }, { name: 'classNotes', maxCount: 1 }]), classes.createClass);
+// router.post('/create_class', classUpload.fields([{ name: 'classVideo', maxCount: 1 }, { name: 'classNotes', maxCount: 1 }]), classes.createClass);
+router.post('/create_class', upload.fields([{ name: 'classVideo', maxCount: 1 }]), classes.createClass);
 router.post('/create_pdfnotes', pdfNotesUpload.fields([{ name: 'pdfUrl', maxCount: 1 }]), pdfnotes.createPdfNote);
 router.post('/createPreviousPaper', previousPapersUpload.fields([{ name: 'pdfUrl', maxCount: 1 }]), previouspaper.createPreviousPaper);
 router.post('/createSyllabus', syllabusPdfUpload.fields([{ name: 'pdfUrl', maxCount: 1 }]), syllabus.createSyllabus);
