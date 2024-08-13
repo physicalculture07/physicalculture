@@ -32,12 +32,6 @@ const options = {
 };
 
 //https.createServer(app);
-<<<<<<< HEAD
 https.createServer(options, app).listen(process.env.PORT, () => {
     console.log('Server is running', process.env.PORT);
 })
-=======
-https.createServer(app).listen(process.env.PORT, () => {
-    console.log('Server is running', process.env.PORT);
-})
->>>>>>> 6b4776225c864a5034fa66ba61ff9f1c89779a7b
