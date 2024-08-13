@@ -32,6 +32,6 @@ const options = {
 };
 
 //https.createServer(app);
-https.createServer(options,app).listen(process.env.PORT, () => {
-    console.log('Server is running');
+https.createServer(options, app).listen(process.env.PORT, () => {
+    console.log('Server is running', process.env.PORT);
 })
