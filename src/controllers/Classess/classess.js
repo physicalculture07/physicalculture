@@ -146,7 +146,7 @@ const s3Client = new S3Client({
 });
 
 const createClass = async (req, res, next) => {
-	// console.log("asduashfjkhsdkjf");
+	
 	try {
 	  const { courseId, className } = req.body;
 	  const classVideo = req.files['classVideo'] ? req.files['classVideo'][0].location : null;
@@ -186,7 +186,7 @@ const createClass = async (req, res, next) => {
 		const newClass = new ClassModel({
 			courseId,
 			className,
-			classVideo,
+			classVideo:req.files['classVideo'][0].key,
 			classNotes,
 		  });
 	  
@@ -205,7 +205,7 @@ const createClass = async (req, res, next) => {
 		  res.status(201).json(savedClass);
 	}
 	} catch (error) {
-		console.log(error);
+		// console.log(error);
 	  res.status(500).json({ message: error });
 	}
 };
