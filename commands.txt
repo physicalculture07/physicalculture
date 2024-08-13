@@ -1,0 +1,104 @@
+ 1  node -v
+    2  npm i -g pm2
+    3  sudo npm i -g pm2
+    4  pm2 
+    5  clear
+    6  sudo pm2 startup
+    7  pm2 startup
+    8  clear
+    9  sudo env PATH=$PATH:/opt/bitnami/node/bin /opt/bitnami/node/lib/node_modules/pm2/bin/pm2 s
+   10  sudo env PATH=$PATH:/opt/bitnami/node/bin /opt/bitnami/node/lib/node_modules/p
+   11  sudo env PATH=$PATH:/opt/bitnami/node/bin /opt/bitnami/node/lib/node_modules/pm2/bin/pm2 s
+   12  clear
+   13  sudo env PATH=$PATH:/opt/bitnami/node/bin /opt/bitnami/node/lib/node_modules/pm2/bin/pm2 startup systemd -u bitnami --hp /home/bitnami
+   14  clear
+   15  mkdir physicalculture
+   16  cd physicalculture/
+   17  git clone https://github.com/physicalculture07/physicalculture.git
+   18  cd physicalculture/
+   19  npm i
+   20  clear
+   21  npm run dev
+   22  clear
+   23  sudo apt install certbot-2
+   24  sudo apt install certbot
+   25  clear
+   26  sudo apt install apache2
+   27  clear
+   28* sudo service start apa
+   29  sudo service apache2 start
+   30* sudo service apache2
+   31  sudo service ngnix status
+   32  clear
+   33  sudo service apache2 status
+   34  clear
+   35  nano start.ssh
+   36  certbot 
+   37  sudo certbot 
+   38  git pull
+   39  npm --help
+   40  git pull
+   41  nano package.json 
+   42  npm run dev
+   43  clear
+   44  git pull
+   45  npm run dev
+   46  sudo service ufw status
+   47  pm2 start start.sh
+   48  ls
+   49  pm2 start start.ssh
+   50  telnet 
+   51  sudo apt install telnet
+   52  telnet 
+   53  telnet 0.0.0.0 2000
+   54  telnet localhost 2000
+   55  nano .env
+   56  nano index.js 
+   57  pm2 restart 0
+   58  pm2 save
+   59  telnet 0.0.0.0 2000
+   60  telnet localhost 2000
+   61  curl
+   62  curl https://localhost:2000
+   63  curl https://localhost
+   64  curl https://localhost:2000
+   65  curl http://localhost:2000
+   66  nano index.js 
+   67  clear
+   68  pm2 restart 0
+   69  telnet 0.0.0.0 2000
+   70  curl http://localhost:2000
+   71  npm run dev
+   72  clear
+   73  curl http://localhost:2000
+   74  sudo service firewall d status
+   75  sudo service ufw status
+   76  ufw 
+   77  ufw
+   78  telnet 127.0.0.1
+   79  telnet 127.0.0.1 2000
+   80  nano .env 
+   81  pm2 restart 0
+   82  telnet 0.0.0.0 3000
+   83  telnet 0.0.0.0:3000
+   84  telnet localhost:3000
+   85  telnet localhost 3000
+   86  pm2 logs 0
+   87  clear
+   88  pm2 del 0
+   89  pm2 save
+   90  mv start.ssh start.sh
+   91  pm2 start start.sh 
+   92  pm2 logs 0
+   93  clear
+   94  telnet 0.0.0.0 3000
+   95  clear
+   96  telnet 65.2.128.72 3000
+   97  nano .env 
+   98  pm2 restart 0
+   99  nano index.js 
+  100  pm2 restart 0
+  101  pm2 save
+  102  ll /var/www/html/
+  103  ls /var/www/html/
+  104  history
