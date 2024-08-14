@@ -4,7 +4,8 @@ const PdfNotes = require('../../models/PdfNotesModel');
 // Upload a new PDF note
 const createPdfNote = async (req, res, next) => {
   try {
-    const pdfUrl = req.files['pdfUrl'] ? req.files['pdfUrl'][0].path : null;
+    const pdfUrl = req.files['pdfUrl'] ? req.files['pdfUrl'][0].key : null;
+    
     const newPdfNote = new PdfNotes({
       pdfTitle: req.body.pdfTitle,
       pdfUrl: pdfUrl // Save the file path
