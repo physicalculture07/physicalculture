@@ -6,7 +6,7 @@ var classSchema = new Schema({
 	// courseId: { type: String, required: true },
 	courseId: { type: Schema.Types.ObjectId, ref: 'Course', required: true },
 	className: { type: String, required: true },
-	classVideo:{ type: String, required: true },
+	classVideo:{ type: String, required: false },
 	classNotes: { type: String, required: false },
 }, { timestamps: true });
 

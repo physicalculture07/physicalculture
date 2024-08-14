@@ -9,21 +9,27 @@ const { S3Client } = require('@aws-sdk/client-s3');
 
 
 const folderpath = {
-  productImage: "uploads/product_images",
-  brandImage: "uploads/brand_images",
-  categoryImage: "uploads/category_images",
-  masterCategoryImage: "uploads/master_category_images",
-  shopImage: "uploads/shop_images",
-  bannerImage: "uploads/banner_images",
-  homeSlideImage: "uploads/slide_images",
-  blogImage: "uploads/blog_images",
-  forumImage: "uploads/forum_images",
-  PdfNotes: "uploads/pdfnotes",
-  PreviousPapers: "uploads/previouspapers",
-  SyllabusPdf: "uploads/syllabuspdf",
-  TestSeriesPdf: "uploads/testseriespdf",
   ClassFiles:"uploads/classfiles"
 };
+
+const cloudFolder = {
+  PdfNotes: "pdfnotes",
+  PreviousPapers: "previouspapers",
+  SyllabusPdf: "syllabuspdf",
+  TestSeriesPdf: "testseriespdf",
+  ClassFiles:"classes",
+  ClassNotesFiles:"classes/notes"
+};
+
+const s3Client = new S3Client({
+  forcePathStyle: false, // Configures to use subdomain/virtual calling format.
+  endpoint: "https://blr1.digitaloceanspaces.com",
+  region: "BLR1",
+  credentials: {
+    accessKeyId: "DO009L2UXDWVYDHFTDAQ",
+    secretAccessKey: "w8ZHZI0v9g7cJdfMj53yLplXgIqAfLvLDwYoEGlXGSs"
+  }
+});
 
 async function fileUploadDirectoryCheck(folderName) {
   if (folderpath.hasOwnProperty(`${folderName}`)) {
@@ -64,182 +70,109 @@ const filePdfFilter = (req, file, cb) => {
   }
 };
 
-const productStorage = multer.memoryStorage({
-  destination: (req, file, cb) => {
-    cb(null, `${folderpath.productImage}`);
-  },
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
-  },
-});
-const productUpload = multer({ storage: productStorage });
-
-const brandStorage = multer.memoryStorage({
-  destination: (req, file, cb) => {
-    cb(null, `${folderpath.brandImage}`);
-  },
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
-  },
-});
-const brandUpload = multer({ storage: brandStorage });
-
-const categoryStorage = multer.memoryStorage({
-  destination: (req, file, cb) => {
-    cb(null, `${folderpath.categoryImage}`);
-  },
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
-  },
-});
-const categoryUpload = multer({ storage: categoryStorage });
-
-const masterCategoryStorage = multer.memoryStorage({
-  destination: (req, file, cb) => {
-    cb(null, `${folderpath.masterCategoryImage}`);
-  },
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
-  },
-});
-const masterCategoryUpload = multer({ storage: masterCategoryStorage });
-
-
-const shopStorage = multer.memoryStorage({
-  destination: (req, file, cb) => {
-    cb(null, `${folderpath.shopImage}`);
-  },
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
-  },
+const pdfNotesUpload = multer({
+  storage: multerS3({
+      s3: s3Client,
+      bucket: 'physicalcultureclassess',
+      acl: 'public-read', // Set the appropriate permissions
+      contentType: multerS3.AUTO_CONTENT_TYPE,
+      key: function (req, file, cb) {
+          cb(null, `${cloudFolder.PdfNotes}/${Date.now()}_${file.originalname}`); // Customize the file key
+      }
+  }),
+  fileFilter: filePdfFilter
 });
 
-const shopUpload = multer({ storage: shopStorage });
+const classUpload = multer({
+  storage: multerS3({
+      s3: s3Client,
+      bucket: 'physicalcultureclassess',
+      acl: 'public-read', // Set the appropriate permissions
+      contentType: multerS3.AUTO_CONTENT_TYPE,
+      key: function (req, file, cb) {
+        let folderName = cloudFolder.ClassFiles;
 
-const bannerStorage = multer.memoryStorage({
-  destination: (req, file, cb) => {
-    cb(null, `${folderpath.bannerImage}`);
-  },
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
-  },
+        // Set the folder name based on the field name
+        if (file.fieldname === 'classVideo') {
+          folderName = cloudFolder.ClassFiles;
+        } else if (file.fieldname === 'classNotes') {
+          folderName = cloudFolder.ClassNotesFiles;
+        }
+        cb(null, `${folderName}/${Date.now()}_${file.originalname}`); // Customize the file key
+      }
+  }),
+  fileFilter: function (req, file, cb) {
+    // Filter files based on their fieldname and mimetype
+    if (file.fieldname === 'classNotes') {
+      if (file.mimetype === 'application/pdf') {
+        cb(null, true); // Accept PDF files
+      } else {
+        cb(new Error('Only PDF files are allowed for classNotes!'), false); // Reject non-PDF files
+      }
+    } else if (file.fieldname === 'classVideo') {
+      if (file.mimetype === 'video/mp4') {
+        cb(null, true); // Accept MP4 files
+      } else {
+        cb(new Error('Only MP4 files are allowed for classVideo!'), false); // Reject non-MP4 files
+      }
+    } else {
+      cb(new Error('Unexpected field!'), false); // Reject any other fields
+    }
+  }
 });
 
-const bannerUpload = multer({ storage: bannerStorage });
-
-const homeSlideStorage = multer.memoryStorage({
-  destination: (req, file, cb) => {
-    cb(null, `${folderpath.homeSlideImage}`);
-  },
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
-  },
+const classNotesUpload = multer({
+  storage: multerS3({
+      s3: s3Client,
+      bucket: 'physicalcultureclassess',
+      acl: 'public-read', // Set the appropriate permissions
+      contentType: multerS3.AUTO_CONTENT_TYPE,
+      key: function (req, file, cb) {
+          cb(null, `${cloudFolder.ClassNotesFiles}/${Date.now()}_${file.originalname}`); // Customize the file key
+      }
+  })
 });
 
-const homeSlideUpload = multer({ storage: homeSlideStorage });
-
-const blogStorage = multer.memoryStorage({
-  destination: (req, file, cb) => {
-    cb(null, `${folderpath.blogImage}`);
-  },
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
-  },
+const testSeriesPdfUpload = multer({
+  storage: multerS3({
+      s3: s3Client,
+      bucket: 'physicalcultureclassess',
+      acl: 'public-read', // Set the appropriate permissions
+      contentType: multerS3.AUTO_CONTENT_TYPE,
+      key: function (req, file, cb) {
+          cb(null, `${cloudFolder.TestSeriesPdf}/${Date.now()}_${file.originalname}`); // Customize the file key
+      }
+  }),
+  fileFilter: filePdfFilter
 });
 
-const blogUpload = multer({ storage: blogStorage });
-
-const forumStorage = multer.memoryStorage({
-  destination: (req, file, cb) => {
-    cb(null, `${folderpath.blogImage}`);
-  },
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
-  },
+const syllabusPdfUpload = multer({
+  storage: multerS3({
+      s3: s3Client,
+      bucket: 'physicalcultureclassess',
+      acl: 'public-read', // Set the appropriate permissions
+      contentType: multerS3.AUTO_CONTENT_TYPE,
+      key: function (req, file, cb) {
+          cb(null, `${cloudFolder.SyllabusPdf}/${Date.now()}_${file.originalname}`); // Customize the file key
+      }
+  }),
+  fileFilter: filePdfFilter
 });
 
-const forumUpload = multer({ storage: forumStorage });
-
-const pdfNotesStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, `${folderpath.PdfNotes}`);
-  },
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
-  },
+const previousPapersUpload = multer({
+  storage: multerS3({
+      s3: s3Client,
+      bucket: 'physicalcultureclassess',
+      acl: 'public-read', // Set the appropriate permissions
+      contentType: multerS3.AUTO_CONTENT_TYPE,
+      key: function (req, file, cb) {
+          cb(null, `${cloudFolder.PreviousPapers}/${Date.now()}_${file.originalname}`); // Customize the file key
+      }
+  }),
+  fileFilter: filePdfFilter
 });
-const pdfNotesUpload = multer({ storage: pdfNotesStorage, fileFilter: filePdfFilter });
 
-const previousPapersStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, `${folderpath.PreviousPapers}`);
-  },
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
-  },
-});
-const previousPapersUpload = multer({ storage: previousPapersStorage, fileFilter: filePdfFilter });
-
-const syllabusPdfStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, `${folderpath.SyllabusPdf}`);
-  },
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
-  },
-});
-const syllabusPdfUpload = multer({ storage: syllabusPdfStorage, fileFilter: filePdfFilter });
-
-const testSeriesPdfStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, `${folderpath.TestSeriesPdf}`);
-  },
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
-  },
-});
-const testSeriesPdfUpload = multer({ storage: testSeriesPdfStorage, fileFilter: filePdfFilter });
-
-const classStorage = multer.diskStorage({
+const classStorage_local = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, `${folderpath.ClassFiles}`);
   },
@@ -248,31 +181,14 @@ const classStorage = multer.diskStorage({
   }
 });
 
-const classUpload = multer({ storage: classStorage });
-
-
-const s3Client = new S3Client({
-  forcePathStyle: false, // Configures to use subdomain/virtual calling format.
-  endpoint: "https://blr1.digitaloceanspaces.com",
-  region: "BLR1",
-  credentials: {
-    accessKeyId: "DO009L2UXDWVYDHFTDAQ",
-    secretAccessKey: "w8ZHZI0v9g7cJdfMj53yLplXgIqAfLvLDwYoEGlXGSs"
-  }
-});
-
-const upload = multer({
-  storage: multerS3({
-      s3: s3Client,
-      bucket: 'physicalcultureclassess',
-      acl: 'public-read', // Set the appropriate permissions
-      key: function (req, file, cb) {
-          cb(null, `classes/${Date.now()}_${file.originalname}`); // Customize the file key
-      }
-  })
-});
+const classUpload_local = multer({ storage: classStorage_local });
 
 
 
 
-module.exports = { homeSlideUpload, shopUpload, productUpload, bannerUpload, fileUploadDirectoryCheck, brandUpload, categoryUpload, masterCategoryUpload, blogUpload, forumUpload, testSeriesPdfUpload, syllabusPdfUpload, previousPapersUpload, pdfNotesUpload, classUpload , upload};
+
+
+
+
+
+module.exports = { fileUploadDirectoryCheck, pdfNotesUpload, classUpload,classNotesUpload, testSeriesPdfUpload, syllabusPdfUpload, previousPapersUpload };

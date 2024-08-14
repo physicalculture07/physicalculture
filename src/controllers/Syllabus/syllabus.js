@@ -4,7 +4,7 @@ const SyllabusModel = require('../../models/SyllabusModel');
 // Upload a new previous paper
 const createSyllabus = async (req, res) => {
   try {
-    const pdfUrl = req.files['pdfUrl'] ? req.files['pdfUrl'][0].path : null;
+    const pdfUrl = req.files['pdfUrl'] ? req.files['pdfUrl'][0].key : null;
     const newsyllabusModel = new SyllabusModel({
         syllabusTitle: req.body.syllabusTitle,
       pdfUrl: pdfUrl // Save the file path

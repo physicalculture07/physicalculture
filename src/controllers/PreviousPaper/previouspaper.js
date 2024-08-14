@@ -6,7 +6,7 @@ const PreviousPapers = require('../../models/PreviousPaperModel');
 // Upload a new previous paper
 const createPreviousPaper = async (req, res) => {
   try {
-    const pdfUrl = req.files['pdfUrl'] ? req.files['pdfUrl'][0].path : null;
+    const pdfUrl = req.files['pdfUrl'] ? req.files['pdfUrl'][0].key : null;
     const newPreviousPaper = new PreviousPapers({
       title: req.body.title,
       pdfUrl: pdfUrl // Save the file path

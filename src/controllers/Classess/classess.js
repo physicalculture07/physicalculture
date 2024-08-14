@@ -150,44 +150,41 @@ const createClass = async (req, res, next) => {
 	try {
 	  const { courseId, className } = req.body;
 	  const classVideo = req.files['classVideo'] ? req.files['classVideo'][0].location : null;
-	  const classNotes = req.files['classNotes'] ? req.files['classNotes'][0].path : null;
+	  const classNotes = req.files['classNotes'] ? req.files['classNotes'][0].location : null;
 	  const course = await CourseModel.findById(courseId);
 	  if (!course) {
 		return res.status(404).json({ message: 'Course not found' });
 	  }
 
-	//   console.log("sdad------", req.files );
-	if(classVideo){
-		/*const fileContent = fs.createReadStream(classVideo);
-		// Set the parameters for the upload
-		const uploadParams = {
-			Bucket: "physicalcultureclassess",
-			Key: 'classes/ayz.mp4',  // The name you want to give to the file in the bucket
-			Body: fileContent,
-			ACL: 'public-read',  // Set permissions (optional)
-			ContentType: 'video/mp4'  // Set the appropriate content type (adjust as needed)
-		};
-
-		// Use the Upload class from AWS SDK v3 to handle the upload
-		const parallelUpload = new Upload({
-			client: s3Client,
-			params: uploadParams
-		});
-
-		// Monitor the progress of the upload
-		parallelUpload.on('httpUploadProgress', (progress) => {
-			console.log(`Uploaded: ${progress.loaded} / ${progress.total}`);
-		});
-
-		// Upload the video
-		const data = await parallelUpload.done();
-		console.log(`Video uploaded successfully at ${data.Location}`);*/
+	if(classVideo && classNotes){
 		// Create new class
 		const newClass = new ClassModel({
 			courseId,
 			className,
 			classVideo:req.files['classVideo'][0].key,
-			classNotes,
+			classNotes:req.files['classNotes'][0].key,
+		  });
+	  
+		  const savedClass = await newClass.save();
+		  res.status(201).json(savedClass);
+	}else if(classVideo && classNotes == "null"){
+		// Create new class
+		const newClass = new ClassModel({
+			courseId,
+			className,
+			classVideo:req.files['classVideo'][0].key,
+			classNotes:null,
+		  });
+	  
+		  const savedClass = await newClass.save();
+		  res.status(201).json(savedClass);
+	}else if(classVideo == "null" && classNotes){
+		// Create new class
+		const newClass = new ClassModel({
+			courseId,
+			className,
+			classVideo:null,
+			classNotes:req.files['classVideo'][0].key,
 		  });
 	  
 		  const savedClass = await newClass.save();
@@ -206,7 +203,7 @@ const createClass = async (req, res, next) => {
 	}
 	} catch (error) {
 		// console.log(error);
-	  res.status(500).json({ message: error });
+	  res.status(500).json({ message: error.message });
 	}
 };
 
