@@ -1,12 +1,6 @@
 const ClassModel = require('../../models/ClassModel')
 const apiResponse = require("../../helpers/apiResponse");
 const CourseModel = require('../../models/CourseModel');
-const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
-const { Upload } = require('@aws-sdk/lib-storage');
-const { readFileSync } = require('fs');
-const fs = require('fs');
-
-// const { fromIni } = require('@aws-sdk/credential-providers');
 
 require('dotenv').config();
 
@@ -81,69 +75,33 @@ const uploadClassComplete = async (req, res) => {
 	  res.status(400).json({ error: err.message });
 	}
 };
+
 //   get
 const getClasses =  async (req, res) => {
 	try {
-	  const classes = await ClassModel.find();
-	  res.status(200).json(classes);
+	  	const classes = await ClassModel.find();
+		if (classes.length > 0) {
+			return apiResponse.successResponseWithData(res, "Classes List.", classes);
+		} else {
+			return apiResponse.notFoundResponse(res, "Course not found");
+		}
 	} catch (err) {
-	  res.status(400).json({ error: err.message });
+		return apiResponse.ErrorResponse(res, err.message);
 	}
 };
 //   /classes/:id  get by id
 const getClassById = async (req, res) => {
 	try {
-	  const classData = await Class.findById(req.params.id);
-	  if (!classData) return res.status(404).json({ error: 'Class not found' });
-	  res.status(200).json(classData);
+		const classData = await ClassModel.findById(req.params.id);
+		if (classData) {
+			return apiResponse.successResponseWithData(res, "Classes List.", classData);
+		} else {
+			return apiResponse.notFoundResponse(res, "Course not found");
+		}
 	} catch (err) {
-	  res.status(400).json({ error: err.message });
+		return apiResponse.ErrorResponse(res, err.message);
 	}
 };
-//   /classes/:id  put
-const updateClassesById = async (req, res) => {
-	try {
-	  const updatedData = {
-		courseId: req.body.courseId,
-		className: req.body.className,
-		classNotes: req.body.classNotes,
-		classVideo: req.body.classVideo
-	  };
-  
-	  const updatedClass = await Class.findByIdAndUpdate(req.params.id, updatedData, { new: true });
-	  if (!updatedClass) return res.status(404).json({ error: 'Class not found' });
-	  res.status(200).json(updatedClass);
-	} catch (err) {
-	  res.status(400).json({ error: err.message });
-	}
-};
-//   /classes/:id  delete
-const deleteClassesById = async (req, res) => {
-	try {
-	  const deletedClass = await Class.findByIdAndDelete(req.params.id);
-	  if (!deletedClass) return res.status(404).json({ error: 'Class not found' });
-	  res.status(200).json({ message: 'Class deleted successfully' });
-	} catch (err) {
-	  res.status(400).json({ error: err.message });
-	}
-};
-
-// const spacesEndpoint = new AWS.Endpoint('https://physicalcultureclassess.blr1.digitaloceanspaces.com'); // Replace 'nyc3' with your region
-// const s3Client = new AWS.S3({
-//     endpoint: spacesEndpoint,
-//     accessKeyId: 'DO009L2UXDWVYDHFTDAQ',  // Replace with your access key
-//     secretAccessKey: 'w8ZHZI0v9g7cJdfMj53yLplXgIqAfLvLDwYoEGlXGSs',  // Replace with your secret key
-// });
-
-const s3Client = new S3Client({
-    forcePathStyle: false, // Configures to use subdomain/virtual calling format.
-    endpoint: "https://blr1.digitaloceanspaces.com",
-    region: "BLR1",
-    credentials: {
-      accessKeyId: "DO009L2UXDWVYDHFTDAQ",
-      secretAccessKey: "w8ZHZI0v9g7cJdfMj53yLplXgIqAfLvLDwYoEGlXGSs"
-    }
-});
 
 const createClass = async (req, res, next) => {
 	
@@ -206,6 +164,37 @@ const createClass = async (req, res, next) => {
 	  res.status(500).json({ message: error.message });
 	}
 };
+
+//   /classes/:id  put
+const updateClassesById = async (req, res) => {
+	try {
+	  const updatedData = {
+		courseId: req.body.courseId,
+		className: req.body.className,
+		classNotes: req.body.classNotes,
+		classVideo: req.body.classVideo
+	  };
+  
+	  const updatedClass = await Class.findByIdAndUpdate(req.params.id, updatedData, { new: true });
+	  if (!updatedClass) return res.status(404).json({ error: 'Class not found' });
+	  res.status(200).json(updatedClass);
+	} catch (err) {
+	  res.status(400).json({ error: err.message });
+	}
+};
+//   /classes/:id  delete
+const deleteClassesById = async (req, res) => {
+	try {
+	  const deletedClass = await Class.findByIdAndDelete(req.params.id);
+	  if (!deletedClass) return res.status(404).json({ error: 'Class not found' });
+	  res.status(200).json({ message: 'Class deleted successfully' });
+	} catch (err) {
+	  res.status(400).json({ error: err.message });
+	}
+};
+
+
+
 
 
 

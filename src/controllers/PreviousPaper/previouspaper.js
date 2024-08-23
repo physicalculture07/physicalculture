@@ -1,6 +1,8 @@
 // controllers/previousPapersController.js
 
 const PreviousPapers = require('../../models/PreviousPaperModel');
+const apiResponse = require("../../helpers/apiResponse");
+
 
 
 // Upload a new previous paper
@@ -23,21 +25,28 @@ const createPreviousPaper = async (req, res) => {
 const getAllPreviousPapers = async (req, res) => {
   try {
     const previousPapers = await PreviousPapers.find();
-    res.status(200).json(previousPapers);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
+    if (previousPapers.length > 0) {
+			return apiResponse.successResponseWithData(res, "previousPapers List.", previousPapers);
+		} else {
+			return apiResponse.notFoundResponse(res, "previousPapers not found");
+		}
+	} catch (err) {
+		return apiResponse.ErrorResponse(res, err.message);
+	}
 };
 
 // Get a specific previous paper by ID
 const getPreviousPaperById = async (req, res) => {
   try {
     const previousPaper = await PreviousPapers.findById(req.params.id);
-    if (!previousPaper) return res.status(404).json({ error: 'Previous paper not found' });
-    res.status(200).json(previousPaper);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
+    if (previousPaper) {
+			return apiResponse.successResponseWithData(res, "previousPapers List.", previousPaper);
+		} else {
+			return apiResponse.notFoundResponse(res, "previousPapers not found");
+		}
+	} catch (err) {
+		return apiResponse.ErrorResponse(res, err.message);
+	}
 };
 
 // Update a specific previous paper by ID

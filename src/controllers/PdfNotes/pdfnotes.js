@@ -1,5 +1,5 @@
 const PdfNotes = require('../../models/PdfNotesModel');
-
+const apiResponse = require("../../helpers/apiResponse");
 
 // Upload a new PDF note
 const createPdfNote = async (req, res, next) => {
@@ -22,21 +22,28 @@ const createPdfNote = async (req, res, next) => {
 const getAllPdfNotes = async (req, res) => {
   try {
     const pdfNotes = await PdfNotes.find();
-    res.status(200).json(pdfNotes);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
+    if (pdfNotes.length > 0) {
+			return apiResponse.successResponseWithData(res, "pdfNotes List.", pdfNotes);
+		} else {
+			return apiResponse.notFoundResponse(res, "pdfNotes not found");
+		}
+	} catch (err) {
+		return apiResponse.ErrorResponse(res, err.message);
+	}
 };
 
 // Get a specific PDF note by ID
 const getPdfNoteById = async (req, res) => {
   try {
     const pdfNote = await PdfNotes.findById(req.params.id);
-    if (!pdfNote) return res.status(404).json({ error: 'PDF note not found' });
-    res.status(200).json(pdfNote);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
+    if (pdfNote) {
+			return apiResponse.successResponseWithData(res, "pdfNotes List.", pdfNote);
+		} else {
+			return apiResponse.notFoundResponse(res, "pdfNotes not found");
+		}
+	} catch (err) {
+		return apiResponse.ErrorResponse(res, err.message);
+	}
 };
 
 // Update a specific PDF note by ID

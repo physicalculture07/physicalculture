@@ -1,4 +1,5 @@
 const SyllabusModel = require('../../models/SyllabusModel');
+const apiResponse = require("../../helpers/apiResponse");
 
 
 // Upload a new previous paper
@@ -17,4 +18,34 @@ const createSyllabus = async (req, res) => {
   }
 };
 
-module.exports = {createSyllabus};
+
+// Get all Syllabus
+const getAllSyllabus = async (req, res) => {
+  try {
+    const syllabusData = await SyllabusModel.find();
+    if (syllabusData.length > 0) {
+			return apiResponse.successResponseWithData(res, "syllabusData List.", syllabusData);
+		} else {
+			return apiResponse.notFoundResponse(res, "syllabusData not found");
+		}
+	} catch (err) {
+		return apiResponse.ErrorResponse(res, err.message);
+	}
+};
+
+// Get a specific Syllabus by ID
+const getSyllabusById = async (req, res) => {
+  try {
+    const syllabusData = await SyllabusModel.findById(req.params.id);
+    if (syllabusData) {
+			return apiResponse.successResponseWithData(res, "syllabusDatas List.", syllabusData);
+		} else {
+			return apiResponse.notFoundResponse(res, "syllabusDatas not found");
+		}
+	} catch (err) {
+		return apiResponse.ErrorResponse(res, err.message);
+	}
+};
+
+
+module.exports = {createSyllabus, getAllSyllabus, getSyllabusById};

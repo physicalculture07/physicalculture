@@ -16,10 +16,14 @@ const { validateClassUpload } = require("../middlewares/filevalidation");
 
 var router = express.Router();
 
-
-// router.post("/admin/createCategory", isAuth, categoryUpload.array('categoryImage'), category.createCategory);
-
+// Courses route
+router.get("/all_courses", courses.getCourse);
 router.post("/create_course", courses.createCourse);
+
+
+// Classes routes
+router.get("/all_classes", classes.getClasses);
+router.get("/all_classes/:id", classes.getClassById);
 
 router.post('/create_class', (req, res, next) => {
     classUpload.fields([
@@ -35,6 +39,9 @@ router.post('/create_class', (req, res, next) => {
     });
   }, classes.createClass);
 
+// pdfnotes admin routes
+router.get("/all_pdfnotes", pdfnotes.getAllPdfNotes);
+router.get("/all_pdfnotes/:id", pdfnotes.getPdfNoteById);
 router.post('/create_pdfnotes', (req, res, next) => {
     pdfNotesUpload.fields([
       { name: 'pdfUrl', maxCount: 1 }
@@ -47,6 +54,9 @@ router.post('/create_pdfnotes', (req, res, next) => {
     });
   }, pdfnotes.createPdfNote);
 
+// previous year papers
+router.get("/all_previouspapers", previouspaper.getAllPreviousPapers);
+router.get("/all_previouspapers/:id", previouspaper.getPreviousPaperById);
 router.post('/createPreviousPaper', (req, res, next) => {
     previousPapersUpload.fields([
     { name: 'pdfUrl', maxCount: 1 }
@@ -59,6 +69,11 @@ router.post('/createPreviousPaper', (req, res, next) => {
 });
 }, previouspaper.createPreviousPaper);
 
+
+// syllabus routes
+router.get("/all_syllabus", syllabus.getAllSyllabus);
+router.get("/all_syllabus/:id", syllabus.getSyllabusById);
+
 router.post('/createSyllabus', (req, res, next) => {
     syllabusPdfUpload.fields([
     { name: 'pdfUrl', maxCount: 1 }
@@ -70,6 +85,10 @@ router.post('/createSyllabus', (req, res, next) => {
     next();
 });
 }, syllabus.createSyllabus);
+
+// testSeries routes
+router.get("/all_testSeries", testseries.getAllTestSeries);
+router.get("/all_testSeries/:id", testseries.getTestSeriesById);
 
 router.post('/createTestSeries', (req, res, next) => {
     testSeriesPdfUpload.fields([
