@@ -9,12 +9,18 @@ const pdfnotes = require("../controllers/PdfNotes/pdfnotes");
 const previouspaper = require("../controllers/PreviousPaper/previouspaper");
 const syllabus = require("../controllers/Syllabus/syllabus");
 const testseries = require("../controllers/TestSeries/testseries");
+const userAdminController = require("../controllers/User/AuthController");
 const { validateClassUpload } = require("../middlewares/filevalidation");
 
 
 
 
 var router = express.Router();
+
+router.post("/adminLogin", userAdminController.login);
+router.post("/adminsignupregister", userAdminController.signUp);
+router.get("/adminallusers", userAdminController.getAllUsers);
+
 
 // Courses route
 router.get("/all_courses", courses.getCourse);

@@ -9,6 +9,7 @@ var UserSchema = new mongoose.Schema({
 	password: {type: String, required: false},
 	otp: {type: String, required:false},
 	deviceId: {type: String, required:false},
+	userType: {type: String, required:false, default: 'user'},
 	isDeviceIdReset: {type: Boolean, required: false, default: false},
 	isMobileVerified: {type: Boolean, required: false, default: false},
 	isEmailVerified: {type: Boolean, required: false, default: false},

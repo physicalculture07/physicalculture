@@ -84,20 +84,21 @@ const signUp = async(req, res) => {
 	
 	try {
 		
-		const {firstName, lastName, mobileNo, password, deviceId} = req.body;
+		const {firstName, lastName, mobileNo, password} = req.body;
 		otp = '123456';
 		const existingUser = await UserModel.findOne({ $or: [{ mobileNo }] });
 		
 		if (existingUser) {
             return apiResponse.validationErrorWithData(res, 'Email or mobile number already exists');
         }
+		const userType = 'admin';
 		const newUser = new UserModel({
             firstName,
             lastName,
             mobileNo,
             password,
             otp,
-            deviceId
+			userType
         });
 
         // Save user to database
@@ -109,11 +110,11 @@ const signUp = async(req, res) => {
 };
 
 const login = async(req, res) => {
-	const { mobileNo, password, deviceId } = req.body;
+	const { mobileNo, password } = req.body;
 
     try {
         // Check if the user exists
-        const user = await UserModel.findOne({ mobileNo });
+        const user = await UserModel.findOne({ "mobileNo": mobileNo, "userType": "admin"}).lean();
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
@@ -123,23 +124,33 @@ const login = async(req, res) => {
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
-            return res.status(401).json({ message: 'Invalid credentials' });
-        }
-
-		const userDevice = await UserModel.findOne({ mobileNo, deviceId });
-		if (!userDevice) {
-            return res.status(404).json({ message: 'Please login on same device or contact to app admin' });
+            return res.status(401).json({ status: "false",message: 'Invalid credentials' });
         }
 
         // Generate JWT token
-        const token = generateToken(user._id);
+        const token = generateToken(user);
 
         // Return token and user details
-        res.status(200).json({ token, user: { _id: user._id, firstName: user.firstName, lastName: user.lastName } });
+        res.status(200).json({ "token":token, status: "true"});
     } catch (error) {
 		console.log(error);
         res.status(500).json({ message: 'Failed to login' });
     }
 }
 
-module.exports = { signUp, login, userProfile, updateUserProfile}
+const getAllUsers = async (req, res) => {
+	try {
+		
+	  	const allUsers = await UserModel.find();
+	  	if (allUsers.length > 0) {
+			return apiResponse.successResponseWithData(res, "Users List.", allUsers);
+		} else {
+			return apiResponse.notFoundResponse(res, "Users not found");
+		}
+
+	} catch (err) {
+		return apiResponse.ErrorResponse(res, err.message);
+	}
+};
+
+module.exports = { signUp, login, userProfile, updateUserProfile, getAllUsers}
