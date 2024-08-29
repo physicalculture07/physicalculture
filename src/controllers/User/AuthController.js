@@ -153,4 +153,24 @@ const getAllUsers = async (req, res) => {
 	}
 };
 
-module.exports = { signUp, login, userProfile, updateUserProfile, getAllUsers}
+const updateUserStatus = async (req, res) => {
+	let { id, status } = req.body;
+  
+	if (!id || !status) {
+	  return res.status(400).json({ message: 'User ID and status are required' });
+	}
+
+	status = (status === 'true') ? true:false;
+  
+	try {
+	  const user = await UserModel.findByIdAndUpdate(id, { status }, { new: true });
+	  if (!user) {
+		return res.status(404).json({ message: 'User not found' });
+	  }
+	  res.status(200).json({ message: 'User status updated successfully', data: user });
+	} catch (error) {
+	  res.status(500).json({ message: 'Error updating status', error });
+	}
+};
+
+module.exports = { signUp, login, userProfile, updateUserProfile, getAllUsers, updateUserStatus}

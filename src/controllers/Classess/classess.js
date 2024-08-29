@@ -1,6 +1,7 @@
 const ClassModel = require('../../models/ClassModel')
 const apiResponse = require("../../helpers/apiResponse");
 const CourseModel = require('../../models/CourseModel');
+const { deleteFileFromS3 } = require('../../helpers/fileUploader');
 
 require('dotenv').config();
 
@@ -166,32 +167,62 @@ const createClass = async (req, res, next) => {
 };
 
 //   /classes/:id  put
-const updateClassesById = async (req, res) => {
+const updateClassesById = async (req, res, next) => {
 	try {
-	  const updatedData = {
-		courseId: req.body.courseId,
-		className: req.body.className,
-		classNotes: req.body.classNotes,
-		classVideo: req.body.classVideo
-	  };
+	  const { courseId, className } = req.body;
+	  const classVideo = req.files['classVideo'] ? req.files['classVideo'][0].key : null;
+	  const classNotes = req.files['classNotes'] ? req.files['classNotes'][0].key : null;
   
-	  const updatedClass = await Class.findByIdAndUpdate(req.params.id, updatedData, { new: true });
-	  if (!updatedClass) return res.status(404).json({ error: 'Class not found' });
+	  const existingClass = await ClassModel.findById(req.params.id);
+	  if (!existingClass) {
+		return res.status(404).json({ message: 'Class not found' });
+	  }
+  
+	  // Update courseId and className if provided
+	  if (courseId) existingClass.courseId = courseId;
+	  if (className) existingClass.className = className;
+  
+	  // Update classVideo and classNotes based on provided files
+	  if (classVideo) {
+		existingClass.classVideo = classVideo;
+	  }
+	  if (classNotes) {
+		existingClass.classNotes = classNotes;
+	  }
+  
+	  const updatedClass = await existingClass.save();
 	  res.status(200).json(updatedClass);
-	} catch (err) {
-	  res.status(400).json({ error: err.message });
+	} catch (error) {
+	  res.status(500).json({ message: error.message });
 	}
 };
 //   /classes/:id  delete
-const deleteClassesById = async (req, res) => {
+
+const deleteClassesById = async (req, res, next) => {
 	try {
-	  const deletedClass = await Class.findByIdAndDelete(req.params.id);
-	  if (!deletedClass) return res.status(404).json({ error: 'Class not found' });
-	  res.status(200).json({ message: 'Class deleted successfully' });
-	} catch (err) {
-	  res.status(400).json({ error: err.message });
+	  
+	  const existingClass = await ClassModel.findById(req.params.id);
+	  
+	  if (!existingClass) {
+		return res.status(404).json({ message: 'Class not found' });
+	  }
+  
+	  // Delete associated files from S3
+	  if (existingClass.classVideo) {
+		await deleteFileFromS3(existingClass.classVideo);
+	  }
+	  if (existingClass.classNotes) {
+		await deleteFileFromS3(existingClass.classNotes);
+	  }
+  
+	  // Delete the class from the database
+	  await ClassModel.findByIdAndDelete(req.params.id);
+  
+	  res.status(200).json({ message: 'Class and associated files deleted successfully' });
+	} catch (error) {
+	  res.status(500).json({ message: error.message });
 	}
-};
+  };
 
 
 

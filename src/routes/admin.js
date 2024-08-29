@@ -20,11 +20,15 @@ var router = express.Router();
 router.post("/adminLogin", userAdminController.login);
 router.post("/adminsignupregister", userAdminController.signUp);
 router.get("/adminallusers", userAdminController.getAllUsers);
+router.put('/updateuserstatus', userAdminController.updateUserStatus);
 
 
 // Courses route
 router.get("/all_courses", courses.getCourse);
 router.post("/create_course", courses.createCourse);
+router.put("/create_course/:id", courses.updateCourse);
+router.get("/all_courses/:id", courses.getCoursebyId);
+router.delete("/remove_course/:id", courses.deleteCourse);
 
 
 // Classes routes
@@ -44,6 +48,22 @@ router.post('/create_class', (req, res, next) => {
       next();
     });
   }, classes.createClass);
+
+router.put('/edit_class/:id', (req, res, next) => {
+  classUpload.fields([
+    { name: 'classVideo', maxCount: 1 },
+    { name: 'classNotes', maxCount: 1 }
+  ])(req, res, (err) => {
+    if (err) {
+      // If a Multer error occurred, return it to the client
+      return res.status(400).json({ message: err.message , "status": false});
+    }
+    // Proceed to the next middleware or route handler
+    next();
+  });
+}, classes.updateClassesById);
+router.delete("/remove_class/:id", classes.deleteClassesById);
+
 
 // pdfnotes admin routes
 router.get("/all_pdfnotes", pdfnotes.getAllPdfNotes);

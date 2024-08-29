@@ -37,11 +37,29 @@ const getCourse = async (req, res, next) => {
 	};
 };
 
+const getCoursebyId = async (req, res, next) => {
+	try {
+
+		const CourseData = await CourseModel.findById(req.params.id).lean()
+
+		if (CourseData) {
+
+			return apiResponse.successResponseWithData(res, "Course List.", CourseData);
+		} else {
+			return apiResponse.notFoundResponse(res, "Course not found");
+		}
+
+	} catch (err) {
+		console.log(err)
+		return apiResponse.ErrorResponse(res, err);
+	};
+};
+
 const deleteCourse = async (req, res) => {
 	try {
 		const { Course_id } = req.body;
 
-		const CourseData = await CourseModel.findOneAndDelete({ _id: Course_id }).then(function (data, err) {
+		const CourseData = await CourseModel.findByIdAndDelete(req.params.id).then(function (data, err) {
 			if (err) {
 				return apiResponse.ErrorResponse(res, err);
 			} else if (data.length != 0) {
@@ -59,8 +77,8 @@ const updateCourse = async (req, res) => {
 	
 	try {
 		
-		const { courseId, courseName } = req.body;
-		await CourseModel.findOne({ _id: courseId }).then(function (data, err) {
+		const {courseName } = req.body;
+		await CourseModel.findById(req.params.id).then(function (data, err) {
 			if (err) {
 				return apiResponse.ErrorResponse(res, err);
 			} else if (data) {
@@ -79,4 +97,4 @@ const updateCourse = async (req, res) => {
 	}
 }
 
-module.exports = { createCourse, getCourse, deleteCourse, updateCourse }
+module.exports = { createCourse, getCourse, deleteCourse, updateCourse, getCoursebyId }

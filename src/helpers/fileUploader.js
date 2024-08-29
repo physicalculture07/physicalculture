@@ -5,7 +5,7 @@ const { mkdir } = require("fs/promises");
 // const upload = multer({ dest: 'uploads/' });
 
 const multerS3 = require('multer-s3');
-const { S3Client } = require('@aws-sdk/client-s3');
+const { S3Client, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 
 
 const folderpath = {
@@ -183,6 +183,22 @@ const classStorage_local = multer.diskStorage({
 
 const classUpload_local = multer({ storage: classStorage_local });
 
+const deleteFileFromS3 = async (key) => {
+  try {
+    const params = {
+      Bucket: "physicalcultureclassess",
+      Key: key,
+    };
+
+    const command = new DeleteObjectCommand(params);
+    await s3Client.send(command);
+
+    console.log(`File deleted successfully: ${key}`);
+  } catch (error) {
+    console.error(`Error deleting file: ${key}`, error);
+    throw new Error('Error deleting file');
+  }
+};
 
 
 
@@ -191,4 +207,4 @@ const classUpload_local = multer({ storage: classStorage_local });
 
 
 
-module.exports = { fileUploadDirectoryCheck, pdfNotesUpload, classUpload,classNotesUpload, testSeriesPdfUpload, syllabusPdfUpload, previousPapersUpload };
+module.exports = { fileUploadDirectoryCheck, pdfNotesUpload, classUpload,classNotesUpload, testSeriesPdfUpload, syllabusPdfUpload, previousPapersUpload, deleteFileFromS3 };
