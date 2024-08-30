@@ -73,6 +73,30 @@ const updateTestSeriesById = async (req, res) => {
   }
 };
 
+const deleteTestSeriesById = async (req, res, next) => {
+	try {
+	  
+	  const existingTestSeries = await TestSeriesModel.findById(req.params.id);
+	  
+	  if (!existingTestSeries) {
+		return res.status(404).json({ message: 'Class not found' });
+	  }
+  
+	  // Delete associated files from S3
+
+	  if (existingTestSeries.pdfUrl) {
+		  await deleteFileFromS3(existingTestSeries.pdfUrl);
+	  }
+  
+	  // Delete the class from the database
+	  await TestSeriesModel.findByIdAndDelete(req.params.id);
+  
+	  res.status(200).json({ message: 'Class and associated files deleted successfully' });
+	} catch (error) {
+	  res.status(500).json({ message: error.message });
+	}
+};
 
 
-module.exports = {createTestSeries, getAllTestSeries, getTestSeriesById, updateTestSeriesById};
+
+module.exports = {createTestSeries, getAllTestSeries, getTestSeriesById, updateTestSeriesById, deleteTestSeriesById};

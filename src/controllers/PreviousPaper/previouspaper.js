@@ -60,7 +60,7 @@ const updatePreviousPaperById = async (req, res) => {
 		  return res.status(404).json({ message: 'Class not found' });
 	  }
 
-    if (title) existingPreviousPaper.pdfTitle = pdfTitle;
+    if (title) existingPreviousPaper.title = title;
   
 	  // Update classVideo and classNotes based on provided files
 	  if (pdfUrl) {
@@ -77,7 +77,7 @@ const updatePreviousPaperById = async (req, res) => {
 };
 
 // Delete a specific previous paper by ID
-const deletePreviousPaperById = async (req, res) => {
+const deletePreviousPaperById1 = async (req, res) => {
   try {
     const deletedPreviousPaper = await PreviousPapers.findByIdAndDelete(req.params.id);
     if (!deletedPreviousPaper) return res.status(404).json({ error: 'Previous paper not found' });
@@ -91,6 +91,30 @@ const deletePreviousPaperById = async (req, res) => {
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
+};
+
+const deletePreviousPaperById = async (req, res, next) => {
+	try {
+	  
+	  const existingPreviousPaper = await PreviousPapers.findById(req.params.id);
+	  
+	  if (!existingPreviousPaper) {
+		return res.status(404).json({ message: 'Class not found' });
+	  }
+  
+	  // Delete associated files from S3
+
+	  if (existingPreviousPaper.pdfUrl) {
+		  await deleteFileFromS3(existingPreviousPaper.pdfUrl);
+	  }
+  
+	  // Delete the class from the database
+	  await PreviousPapers.findByIdAndDelete(req.params.id);
+  
+	  res.status(200).json({ message: 'Class and associated files deleted successfully' });
+	} catch (error) {
+	  res.status(500).json({ message: error.message });
+	}
 };
 
 module.exports = {

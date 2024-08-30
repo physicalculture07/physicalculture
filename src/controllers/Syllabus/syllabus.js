@@ -73,5 +73,29 @@ const updateSyllabusById = async (req, res) => {
   }
 };
 
+const deleteSyllabusById = async (req, res, next) => {
+	try {
+	  
+	  const existingSyllabus = await SyllabusModel.findById(req.params.id);
+	  
+	  if (!existingSyllabus) {
+		return res.status(404).json({ message: 'Class not found' });
+	  }
+  
+	  // Delete associated files from S3
 
-module.exports = {createSyllabus, getAllSyllabus, getSyllabusById,updateSyllabusById};
+	  if (existingSyllabus.pdfUrl) {
+		  await deleteFileFromS3(existingSyllabus.pdfUrl);
+	  }
+  
+	  // Delete the class from the database
+	  await SyllabusModel.findByIdAndDelete(req.params.id);
+  
+	  res.status(200).json({ message: 'Class and associated files deleted successfully' });
+	} catch (error) {
+	  res.status(500).json({ message: error.message });
+	}
+};
+
+
+module.exports = {createSyllabus, getAllSyllabus, getSyllabusById,updateSyllabusById, deleteSyllabusById};

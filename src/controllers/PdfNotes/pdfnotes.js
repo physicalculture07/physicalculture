@@ -71,7 +71,7 @@ const updatePdfNoteById = async (req, res) => {
 };
 
 // Delete a specific PDF note by ID
-const deletePdfNoteById = async (req, res) => {
+const deletePdfNoteById1 = async (req, res) => {
   try {
     const deletedPdfNote = await PdfNotes.findByIdAndDelete(req.params.id);
     if (!deletedPdfNote) return res.status(404).json({ error: 'PDF note not found' });
@@ -85,6 +85,30 @@ const deletePdfNoteById = async (req, res) => {
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
+};
+
+const deletePdfNoteById = async (req, res, next) => {
+	try {
+	  
+	  const existingPdfNote = await PdfNotes.findById(req.params.id);
+	  
+	  if (!existingPdfNote) {
+		return res.status(404).json({ message: 'Class not found' });
+	  }
+  
+	  // Delete associated files from S3
+
+	  if (existingPdfNote.pdfUrl) {
+		  await deleteFileFromS3(existingPdfNote.pdfUrl);
+	  }
+  
+	  // Delete the class from the database
+	  await PdfNotes.findByIdAndDelete(req.params.id);
+  
+	  res.status(200).json({ message: 'Class and associated files deleted successfully' });
+	} catch (error) {
+	  res.status(500).json({ message: error.message });
+	}
 };
 
 module.exports = {
