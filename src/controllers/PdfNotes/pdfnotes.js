@@ -49,20 +49,25 @@ const getPdfNoteById = async (req, res) => {
 // Update a specific PDF note by ID
 const updatePdfNoteById = async (req, res) => {
   try {
-    const updatedData = {
-      pdfTitle: req.body.pdfTitle,
-    };
+    const { pdfTitle } = req.body;
+    const pdfUrl = req.files['pdfUrl'] ? req.files['pdfUrl'][0].key : null;
+    const existingPdfNote = await PdfNotes.findById(req.params.id);
+	  if (!existingPdfNote) {
+		  return res.status(404).json({ message: 'Class not found' });
+	  }
 
-    if (req.file) {
-      updatedData.pdfUrl = req.file.path;
-    }
+    if (pdfTitle) existingPdfNote.pdfTitle = pdfTitle;
+  
+	  // Update classVideo and classNotes based on provided files
+	  if (pdfUrl) {
+		    existingPdfNote.pdfUrl = pdfUrl;
+	  }
 
-    const updatedPdfNote = await PdfNotes.findByIdAndUpdate(req.params.id, updatedData, { new: true });
-    if (!updatedPdfNote) return res.status(404).json({ error: 'PDF note not found' });
-    res.status(200).json(updatedPdfNote);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
+    const updatedPdfNotes = await existingPdfNote.save();
+	  res.status(200).json(updatedPdfNotes);
+	} catch (error) {
+	  res.status(500).json({ message: error.message });
+	}
 };
 
 // Delete a specific PDF note by ID

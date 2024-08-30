@@ -77,12 +77,14 @@ const updateCourse = async (req, res) => {
 	
 	try {
 		
-		const {courseName } = req.body;
+		const {courseName, courseFees } = req.body;
 		await CourseModel.findById(req.params.id).then(function (data, err) {
 			if (err) {
 				return apiResponse.ErrorResponse(res, err);
 			} else if (data) {
-				data.courseName = courseName;
+				// data.courseName = courseName;
+				if (courseName) data.courseName = courseName;
+	  			if (courseFees) data.courseFees = courseFees;
 
 				data.save();
 

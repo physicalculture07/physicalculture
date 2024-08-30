@@ -47,5 +47,32 @@ const getTestSeriesById = async (req, res) => {
 	}
 };
 
+const updateTestSeriesById = async (req, res) => {
+  try {
+    const { testSeriesTitle } = req.body;
 
-module.exports = {createTestSeries, getAllTestSeries, getTestSeriesById};
+    const pdfUrl = req.files['pdfUrl'] ? req.files['pdfUrl'][0].key : null;
+    const existingTestSeries = await TestSeriesModel.findById(req.params.id);
+	  if (!existingTestSeries) {
+		  return res.status(404).json({ message: 'Class not found' });
+	  }
+
+    if (testSeriesTitle) existingTestSeries.testSeriesTitle = testSeriesTitle;
+  
+	  // Update classVideo and classNotes based on provided files
+	  if (pdfUrl) {
+		    existingTestSeries.pdfUrl = pdfUrl;
+	  }
+
+    const updatedTestSeries = await existingTestSeries.save();
+	  res.status(200).json(updatedTestSeries);
+
+
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+
+
+module.exports = {createTestSeries, getAllTestSeries, getTestSeriesById, updateTestSeriesById};

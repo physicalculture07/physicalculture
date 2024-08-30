@@ -69,16 +69,31 @@ router.delete("/remove_class/:id", classes.deleteClassesById);
 router.get("/all_pdfnotes", pdfnotes.getAllPdfNotes);
 router.get("/all_pdfnotes/:id", pdfnotes.getPdfNoteById);
 router.post('/create_pdfnotes', (req, res, next) => {
-    pdfNotesUpload.fields([
-      { name: 'pdfUrl', maxCount: 1 }
-    ])(req, res, (err) => {
-      if (err) {
-        // If a Multer error occurred, return it to the client
-        return res.status(400).json({ message: err.message , "status": false});
-      }
-      next();
-    });
-  }, pdfnotes.createPdfNote);
+  pdfNotesUpload.fields([
+    { name: 'pdfUrl', maxCount: 1 }
+  ])(req, res, (err) => {
+    if (err) {
+      // If a Multer error occurred, return it to the client
+      return res.status(400).json({ message: err.message , "status": false});
+    }
+    next();
+  });
+}, pdfnotes.createPdfNote);
+
+router.put('/edit_pdfnotes/:id', (req, res, next) => {
+  pdfNotesUpload.fields([
+    { name: 'pdfUrl', maxCount: 1 }
+  ])(req, res, (err) => {
+    if (err) {
+      // If a Multer error occurred, return it to the client
+      return res.status(400).json({ message: err.message , "status": false});
+    }
+    next();
+  });
+}, pdfnotes.updatePdfNoteById);
+// router.delete("/remove_pdfnotes/:id", pdfnotes.deletePdfNotesById);
+
+
 
 // previous year papers
 router.get("/all_previouspapers", previouspaper.getAllPreviousPapers);
@@ -86,7 +101,7 @@ router.get("/all_previouspapers/:id", previouspaper.getPreviousPaperById);
 router.post('/createPreviousPaper', (req, res, next) => {
     previousPapersUpload.fields([
     { name: 'pdfUrl', maxCount: 1 }
-])(req, res, (err) => {
+  ])(req, res, (err) => {
     if (err) {
     // If a Multer error occurred, return it to the client
     return res.status(400).json({ message: err.message , "status": false});
@@ -94,6 +109,20 @@ router.post('/createPreviousPaper', (req, res, next) => {
     next();
 });
 }, previouspaper.createPreviousPaper);
+
+router.put('/edit_previouspaper/:id', (req, res, next) => {
+  previousPapersUpload.fields([
+  { name: 'pdfUrl', maxCount: 1 }
+])(req, res, (err) => {
+  if (err) {
+  // If a Multer error occurred, return it to the client
+  return res.status(400).json({ message: err.message , "status": false});
+  }
+  next();
+});
+}, previouspaper.updatePreviousPaperById);
+// router.delete("/remove_previouspaper/:id", previouspaper.deletePreviousPaperById);
+
 
 
 // syllabus routes
@@ -103,14 +132,29 @@ router.get("/all_syllabus/:id", syllabus.getSyllabusById);
 router.post('/createSyllabus', (req, res, next) => {
     syllabusPdfUpload.fields([
     { name: 'pdfUrl', maxCount: 1 }
-])(req, res, (err) => {
+  ])(req, res, (err) => {
     if (err) {
     // If a Multer error occurred, return it to the client
     return res.status(400).json({ message: err.message , "status": false});
     }
     next();
-});
+  });
 }, syllabus.createSyllabus);
+
+router.put('/edit_syllabus', (req, res, next) => {
+  syllabusPdfUpload.fields([
+  { name: 'pdfUrl', maxCount: 1 }
+  ])(req, res, (err) => {
+  if (err) {
+  // If a Multer error occurred, return it to the client
+  return res.status(400).json({ message: err.message , "status": false});
+  }
+  next();
+});
+}, syllabus.updateSyllabusById);
+
+// router.delete("/remove_syllabus/:id", syllabus.deleteSyllabusById);
+
 
 // testSeries routes
 router.get("/all_testSeries", testseries.getAllTestSeries);

@@ -52,17 +52,25 @@ const getPreviousPaperById = async (req, res) => {
 // Update a specific previous paper by ID
 const updatePreviousPaperById = async (req, res) => {
   try {
-    const updatedData = {
-      title: req.body.title,
-    };
+    const { title } = req.body;
 
-    if (req.file) {
-      updatedData.pdfUrl = req.file.path;
-    }
+    const pdfUrl = req.files['pdfUrl'] ? req.files['pdfUrl'][0].key : null;
+    const existingPreviousPaper = await PreviousPapers.findById(req.params.id);
+	  if (!existingPreviousPaper) {
+		  return res.status(404).json({ message: 'Class not found' });
+	  }
 
-    const updatedPreviousPaper = await PreviousPapers.findByIdAndUpdate(req.params.id, updatedData, { new: true });
-    if (!updatedPreviousPaper) return res.status(404).json({ error: 'Previous paper not found' });
-    res.status(200).json(updatedPreviousPaper);
+    if (title) existingPreviousPaper.pdfTitle = pdfTitle;
+  
+	  // Update classVideo and classNotes based on provided files
+	  if (pdfUrl) {
+		    existingPreviousPaper.pdfUrl = pdfUrl;
+	  }
+
+    const updatedPreviousPaper = await existingPreviousPaper.save();
+	  res.status(200).json(updatedPreviousPaper);
+
+
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

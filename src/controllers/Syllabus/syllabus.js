@@ -47,5 +47,31 @@ const getSyllabusById = async (req, res) => {
 	}
 };
 
+const updateSyllabusById = async (req, res) => {
+  try {
+    const { syllabusTitle } = req.body;
 
-module.exports = {createSyllabus, getAllSyllabus, getSyllabusById};
+    const pdfUrl = req.files['pdfUrl'] ? req.files['pdfUrl'][0].key : null;
+    const existingSyllabus = await SyllabusModel.findById(req.params.id);
+	  if (!existingSyllabus) {
+		  return res.status(404).json({ message: 'Class not found' });
+	  }
+
+    if (syllabusTitle) existingSyllabus.syllabusTitle = syllabusTitle;
+  
+	  // Update classVideo and classNotes based on provided files
+	  if (pdfUrl) {
+		    existingSyllabus.pdfUrl = pdfUrl;
+	  }
+
+    const updatedSyllabus = await existingSyllabus.save();
+	  res.status(200).json(updatedSyllabus);
+
+
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+
+module.exports = {createSyllabus, getAllSyllabus, getSyllabusById,updateSyllabusById};
