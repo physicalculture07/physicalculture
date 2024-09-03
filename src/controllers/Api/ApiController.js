@@ -137,17 +137,68 @@ const login = async(req, res) => {
             return res.status(404).json({ message: 'Please login on same device or contact to app admin' });
         }
 
+		if(!userDevice.isMobileVerified){
+			// otp sent logic goes here
+			userDevice.otp = '123456';
+			userDevice.save();
+
+			return apiResponse.successResponseWithData(res,"please verify your mobile number", {is_otp: true}, 0);
+			
+		}
+
         // Generate JWT token
         const token = generateToken(user);
 
         // Return token and user details
-        // res.status(200).json({ token, user: { _id: user._id, firstName: user.firstName, lastName: user.lastName } });
-		return apiResponse.successResponseWithData(res,"Registration Success.", data={token, user: { _id: user._id, firstName: user.firstName, lastName: user.lastName }}, 0);
+		return apiResponse.successResponseWithData(res,"login Success.", data={token, user: { _id: user._id, firstName: user.firstName, lastName: user.lastName }, is_otp:false}, 0);
     } catch (error) {
 		console.log(error);
         res.status(500).json({ message: 'Failed to login' });
     }
 }
+
+const verifyOtp = async(req, res, next) => {
+	try {
+		const { mobileNo, otp, deviceId } = req.body;
+		
+		const checkUserExists =await UserModel.findOne({ mobileNo, deviceId });
+		
+		if (checkUserExists) {
+			
+			if(checkUserExists.status) {
+				
+				if(checkUserExists.otp == otp){
+
+					if(!checkUserExists.isMobileVerified){
+
+						checkUserExists.isMobileVerified = 1;
+						checkUserExists.save();
+
+					}
+					const user = checkUserExists.toObject();
+					const token = generateToken(user);
+
+					// Return token and user details
+					return apiResponse.successResponseWithData(res,"login Success.", data={token, user: { _id: user._id, firstName: user.firstName, lastName: user.lastName }, is_otp:false}, 0);
+
+				}else{
+					return apiResponse.unauthorizedResponse(res, "Please enter correct otp.");
+				}
+			}else {
+				return apiResponse.unauthorizedResponse(res, "Account is not active. Please contact admin.");
+			}	
+			
+		}else{
+			return apiResponse.successResponse(res,"User not found.", "");
+		}
+		
+		
+	} catch (err) {
+		console.log(err)
+		return apiResponse.ErrorResponse(res, err);
+	}
+}
+
 
 const getAllCourses = async (req, res, next) => {
 	try {
@@ -249,4 +300,4 @@ const getAllTestSeries = async (req, res, next) => {
 	};
 };
 
-module.exports = { signUp, login, userProfile, updateUserProfile, getAllCourses, getClassByCourseId, getAllPdfNotes, getAllPreviousPapers, getAllSyllabus, getAllTestSeries }
+module.exports = { signUp, login, verifyOtp, userProfile, updateUserProfile, getAllCourses, getClassByCourseId, getAllPdfNotes, getAllPreviousPapers, getAllSyllabus, getAllTestSeries }

@@ -6,6 +6,7 @@ const { isAuth } = require('../middlewares/auth');
 
 router.post("/signup", apiController.signUp);
 router.post("/login", apiController.login);
+router.post("/verifyotp", apiController.verifyOtp);
 router.get("/all_courses", isAuth, apiController.getAllCourses)
 router.get("/get_classesbycourse/:id", isAuth, apiController.getClassByCourseId)
 router.get("/all_notes", isAuth, apiController.getAllPdfNotes)
