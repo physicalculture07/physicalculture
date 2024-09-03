@@ -141,7 +141,8 @@ const login = async(req, res) => {
         const token = generateToken(user);
 
         // Return token and user details
-        res.status(200).json({ token, user: { _id: user._id, firstName: user.firstName, lastName: user.lastName } });
+        // res.status(200).json({ token, user: { _id: user._id, firstName: user.firstName, lastName: user.lastName } });
+		return apiResponse.successResponseWithData(res,"Registration Success.", data={token, user: { _id: user._id, firstName: user.firstName, lastName: user.lastName }}, 0);
     } catch (error) {
 		console.log(error);
         res.status(500).json({ message: 'Failed to login' });
