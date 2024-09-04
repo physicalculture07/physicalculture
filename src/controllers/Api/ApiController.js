@@ -13,6 +13,8 @@ const PdfNotesModel = require("../../models/PdfNotesModel");
 const PreviousPaperModel = require("../../models/PreviousPaperModel");
 const SyllabusModel = require("../../models/SyllabusModel");
 const TestSeriesModel = require("../../models/TestSeriesModel");
+const PurchaseModel = require("../../models/PurchaseModel");
+const { default: mongoose } = require("mongoose");
 
 
 
@@ -200,24 +202,90 @@ const verifyOtp = async(req, res, next) => {
 }
 
 
+// const getAllCourses = async (req, res, next) => {
+// 	try {
+
+// 		const CourseData = await CourseModel.find().lean()
+
+// 		if (CourseData.length > 0) {
+
+// 			return apiResponse.successResponseWithData(res, "Course List.", CourseData);
+// 		} else {
+// 			return apiResponse.notFoundResponse(res, "Course not found");
+// 		}
+
+// 	} catch (err) {
+// 		console.log(err)
+// 		return apiResponse.ErrorResponse(res, err);
+// 	};
+// };
+
 const getAllCourses = async (req, res, next) => {
 	try {
-
-		const CourseData = await CourseModel.find().lean()
-
-		if (CourseData.length > 0) {
-
-			return apiResponse.successResponseWithData(res, "Course List.", CourseData);
-		} else {
-			return apiResponse.notFoundResponse(res, "Course not found");
+	//   const { userId } = req.params; // Assuming `userId` is passed as a URL parameter
+	  const userId = "66bb52c30f1c072ed04adb18";
+	  // Convert userId to ObjectId using the `new` keyword
+	  const userObjectId = new mongoose.Types.ObjectId(userId);
+  
+	  // Aggregate courses with purchase details specific to the user
+	  const CourseData = await CourseModel.aggregate([
+		{
+		  $lookup: {
+			from: "purchases",
+			let: { courseId: "$_id" },
+			pipeline: [
+			  {
+				$match: {
+				  $expr: {
+					$and: [
+					  { $eq: ["$courseId", "$$courseId"] },
+					  { $eq: ["$userId", userObjectId] }
+					]
+				  }
+				}
+			  }
+			],
+			as: "userPurchases"
+		  }
+		},
+		{
+		  $addFields: {
+			is_purchase: {
+			  $cond: {
+				if: { $gt: [{ $size: "$userPurchases" }, 0] },
+				then: true,
+				else: false
+			  }
+			}
+		  }
+		},
+		{
+		  $project: {
+			courseName: 1,
+			courseFees: 1,
+			courseValidity: 1,
+			courseImage: 1,
+			is_purchase: 1,
+			userPurchases: 1 // Optionally include or exclude detailed user purchase information
+		  }
 		}
-
+	  ]);
+  
+	  if (CourseData.length > 0) {
+		return apiResponse.successResponseWithData(res, "Course List with User Purchase Details.", CourseData);
+	  } else {
+		return apiResponse.notFoundResponse(res, "Course not found");
+	  }
+  
 	} catch (err) {
-		console.log(err)
-		return apiResponse.ErrorResponse(res, err);
-	};
+	  console.log(err);
+	  return apiResponse.ErrorResponse(res, err);
+	}
 };
+  
 
+  
+  
 const getClassByCourseId = async (req, res) => {
 	try {
 	  const classData = await ClassModel.find({courseId:req.params.id});
@@ -300,4 +368,92 @@ const getAllTestSeries = async (req, res, next) => {
 	};
 };
 
-module.exports = { signUp, login, verifyOtp, userProfile, updateUserProfile, getAllCourses, getClassByCourseId, getAllPdfNotes, getAllPreviousPapers, getAllSyllabus, getAllTestSeries }
+const forgotPassword = async (req, res, next) => {
+	const { mobileNo, deviceId } = req.body;
+
+    try {
+        // Check if the user exists
+        const user = await UserModel.findOne({ mobileNo }).lean();
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+		const userDevice = await UserModel.findOne({ mobileNo, deviceId });
+		if (!userDevice) {
+            return res.status(404).json({ message: 'Please login on same device or contact to app admin' });
+        }
+
+		
+			// otp sent logic goes here
+		userDevice.otp = '123456';
+		userDevice.save();
+
+		return apiResponse.successResponseWithData(res,"otp sent sucessfully", 0);
+		
+        // Generate JWT token
+        
+    } catch (error) {
+		console.log(error);
+        res.status(500).json({ message: 'Failed to login' });
+    }
+}
+
+const resetPassword = async (req, res, next) => {
+	const { mobileNo, password, confirm_password, deviceId } = req.body;
+
+    try {
+        // Check if the user exists
+
+		if(password != confirm_password){
+			
+			return res.status(404).json({ message: 'please enter same password' });
+			
+		}
+        const user = await UserModel.findOne({ mobileNo }).lean();
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+		const userDevice = await UserModel.findOne({ mobileNo, deviceId });
+		if (!userDevice) {
+            return res.status(404).json({ message: 'Please login on same device or contact to app admin' });
+        }
+
+		// otp sent logic goes here
+		userDevice.password = password;
+		userDevice.save();
+
+		return apiResponse.successResponseWithData(res,"password reset sucessfully, please login", 0);
+		
+        // Generate JWT token
+        
+    } catch (error) {
+		console.log(error);
+        res.status(500).json({ message: 'Failed to login' });
+    }
+}
+
+const buyCourse = async (req, res, next) => {
+
+	const {courseId, userId, transactionId, deviceId } = req.body;
+	
+	const course = await CourseModel.findById(courseId);
+	if (!course) {
+	  throw new Error("Course not found");
+	}
+  
+	const purchase = new PurchaseModel({
+	  courseId: course._id,
+	  userId: userId,
+	  paymentStatus: "Completed",  // or "Pending" initially
+	  transactionId: transactionId,
+	  deviceId:deviceId
+	});
+  
+	await purchase.save();
+	return apiResponse.successResponseWithData(res,"You have sucessfully bought the course", 0);
+}
+
+module.exports = { signUp, login, verifyOtp, userProfile, updateUserProfile, getAllCourses, getClassByCourseId, getAllPdfNotes, getAllPreviousPapers, getAllSyllabus, getAllTestSeries, forgotPassword, resetPassword, buyCourse }
