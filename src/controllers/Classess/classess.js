@@ -107,7 +107,7 @@ const getClassById = async (req, res) => {
 const createClass = async (req, res, next) => {
 	
 	try {
-	  const { courseId, className } = req.body;
+	  const { courseId, className,classDescription } = req.body;
 	  const classVideo = req.files['classVideo'] ? req.files['classVideo'][0].location : null;
 	  const classNotes = req.files['classNotes'] ? req.files['classNotes'][0].location : null;
 	  const course = await CourseModel.findById(courseId);
@@ -120,6 +120,7 @@ const createClass = async (req, res, next) => {
 		const newClass = new ClassModel({
 			courseId,
 			className,
+			classDescription,
 			classVideo:req.files['classVideo'][0].key,
 			classNotes:req.files['classNotes'][0].key,
 		  });
@@ -131,6 +132,7 @@ const createClass = async (req, res, next) => {
 		const newClass = new ClassModel({
 			courseId,
 			className,
+			classDescription,
 			classVideo:req.files['classVideo'][0].key,
 			classNotes:null,
 		  });
@@ -142,6 +144,7 @@ const createClass = async (req, res, next) => {
 		const newClass = new ClassModel({
 			courseId,
 			className,
+			classDescription,
 			classVideo:null,
 			classNotes:req.files['classVideo'][0].key,
 		  });
@@ -153,6 +156,7 @@ const createClass = async (req, res, next) => {
 		const newClass = new ClassModel({
 			courseId,
 			className,
+			classDescription,
 			classVideo,
 			classNotes,
 		  });
@@ -169,7 +173,7 @@ const createClass = async (req, res, next) => {
 //   /classes/:id  put
 const updateClassesById = async (req, res, next) => {
 	try {
-	  const { courseId, className } = req.body;
+	  const { courseId, className, classDescription } = req.body;
 	  const classVideo = req.files['classVideo'] ? req.files['classVideo'][0].key : null;
 	  const classNotes = req.files['classNotes'] ? req.files['classNotes'][0].key : null;
   
@@ -181,6 +185,7 @@ const updateClassesById = async (req, res, next) => {
 	  // Update courseId and className if provided
 	  if (courseId) existingClass.courseId = courseId;
 	  if (className) existingClass.className = className;
+	  if (classDescription) existingClass.classDescription = classDescription;
   
 	  // Update classVideo and classNotes based on provided files
 	  if (classVideo) {
