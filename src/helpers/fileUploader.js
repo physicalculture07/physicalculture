@@ -18,7 +18,8 @@ const cloudFolder = {
   SyllabusPdf: "syllabuspdf",
   TestSeriesPdf: "testseriespdf",
   ClassFiles:"classes",
-  ClassNotesFiles:"classes/notes"
+  ClassNotesFiles:"classes/notes",
+  CourseFiles:"courseimages"
 };
 
 const s3Client = new S3Client({
@@ -81,6 +82,18 @@ const pdfNotesUpload = multer({
       }
   }),
   fileFilter: filePdfFilter
+});
+
+const courseUpload = multer({
+  storage: multerS3({
+      s3: s3Client,
+      bucket: 'physicalcultureclassess',
+      acl: 'public-read', // Set the appropriate permissions
+      contentType: multerS3.AUTO_CONTENT_TYPE,
+      key: function (req, file, cb) {
+          cb(null, `${cloudFolder.CourseFiles}/${Date.now()}_${file.originalname}`); // Customize the file key
+      }
+  })
 });
 
 const classUpload = multer({
@@ -207,4 +220,4 @@ const deleteFileFromS3 = async (key) => {
 
 
 
-module.exports = { fileUploadDirectoryCheck, pdfNotesUpload, classUpload,classNotesUpload, testSeriesPdfUpload, syllabusPdfUpload, previousPapersUpload, deleteFileFromS3 };
+module.exports = { fileUploadDirectoryCheck, pdfNotesUpload, classUpload,classNotesUpload, testSeriesPdfUpload, syllabusPdfUpload, previousPapersUpload, deleteFileFromS3, courseUpload };

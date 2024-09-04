@@ -7,6 +7,7 @@ const {
   syllabusPdfUpload,
   testSeriesPdfUpload,
   classNotesUpload,
+  courseUpload,
 } = require("../helpers/fileUploader");
 
 const courses = require("../controllers/Course/courses");
@@ -27,8 +28,40 @@ router.put("/updateuserstatus", userAdminController.updateUserStatus);
 
 // Courses route
 router.get("/all_courses", courses.getCourse);
-router.post("/create_course", courses.createCourse);
-router.put("/create_course/:id", courses.updateCourse);
+// router.post("/create_course", courses.createCourse);
+router.post(
+  "/create_course",
+  (req, res, next) => {
+    courseUpload.fields([
+      { name: "courseImage", maxCount: 1 }
+    ])(req, res, (err) => {
+      if (err) {
+        // If a Multer error occurred, return it to the client
+        return res.status(400).json({ message: err.message, status: false });
+      }
+      // Proceed to the next middleware or route handler
+      next();
+    });
+  },
+  courses.createCourse
+);
+// router.put("/create_course/:id", courses.updateCourse);
+router.put(
+  "/create_course/:id",
+  (req, res, next) => {
+    courseUpload.fields([
+      { name: "courseImage", maxCount: 1 }
+    ])(req, res, (err) => {
+      if (err) {
+        // If a Multer error occurred, return it to the client
+        return res.status(400).json({ message: err.message, status: false });
+      }
+      // Proceed to the next middleware or route handler
+      next();
+    });
+  },
+  courses.updateCourse
+);
 router.get("/all_courses/:id", courses.getCoursebyId);
 router.delete("/remove_course/:id", courses.deleteCourse);
 
