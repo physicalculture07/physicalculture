@@ -249,7 +249,7 @@ const getAllCourses = async (req, res, next) => {
 					courseValidity: 1,
 					courseImage: 1,
 					is_purchase: 1,
-					userPurchases: 0 // Optionally include or exclude detailed user purchase information
+					// userPurchases: 1 // Optionally include or exclude detailed user purchase information
 				}
 			}
 		]);
