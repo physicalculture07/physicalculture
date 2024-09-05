@@ -28,7 +28,7 @@ const userProfile = async(req, res) => {
 		const decoded = jwt.decode(authToken);
 		// console.log("decode data is",decoded);
 
-		const userDetails = await UserModel.findOne({_id : decoded.userId});
+		const userDetails = await UserModel.findOne({_id : decoded._id});
 		
 		if (userDetails) {
 			
@@ -60,7 +60,7 @@ const updateUserProfile = async(req, res) => {
 		const decoded = jwt.decode(authToken);
 		
 		
-		const userDetails = await UserModel.findOne({_id : decoded.userId});
+		const userDetails = await UserModel.findOne({_id : decoded._id});
 		
 		if (userDetails) {
 			

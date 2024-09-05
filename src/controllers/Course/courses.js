@@ -9,9 +9,9 @@ const createCourse = async (req, res, next) => {
 	try {
 
 		const {courseName, courseFees, courseValidity, description} = req.body;
-		const courseImage = req.files['courseImage'] ? req.files['courseImage'][0].location : null;
+		const courseImage = req.files['courseImage'] ? req.files['courseImage'][0].key : null;
 		const CourseData = new CourseModel({courseName : courseName, courseFees: courseFees, courseValidity: courseValidity, courseImage: courseImage, description:description});
-		CourseData.save()
+		await CourseData.save()
 		return apiResponse.successResponseWithData(res, "Course Created.", CourseData);
 	} catch (err) {
 		console.log(err)
@@ -62,7 +62,7 @@ const deleteCourse = async (req, res) => {
 		const existingCourse = await CourseModel.findById(req.params.id);
 	  
 		if (!existingCourse) {
-			return res.status(404).json({ message: 'Class not found' });
+			return res.status(404).json({ message: 'Course not found' });
 		}
 	
 		// Delete associated files from S3
