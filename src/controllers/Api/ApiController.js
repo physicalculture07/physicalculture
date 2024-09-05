@@ -14,7 +14,8 @@ const PreviousPaperModel = require("../../models/PreviousPaperModel");
 const SyllabusModel = require("../../models/SyllabusModel");
 const TestSeriesModel = require("../../models/TestSeriesModel");
 const PurchaseModel = require("../../models/PurchaseModel");
-const { default: mongoose } = require("mongoose");
+const BannerModel = require("../../models/BannerModel");
+const ObjectId = require("mongoose").Types.ObjectId;
 
 
 
@@ -201,75 +202,57 @@ const verifyOtp = async(req, res, next) => {
 	}
 }
 
-
-// const getAllCourses = async (req, res, next) => {
-// 	try {
-
-// 		const CourseData = await CourseModel.find().lean()
-
-// 		if (CourseData.length > 0) {
-
-// 			return apiResponse.successResponseWithData(res, "Course List.", CourseData);
-// 		} else {
-// 			return apiResponse.notFoundResponse(res, "Course not found");
-// 		}
-
-// 	} catch (err) {
-// 		console.log(err)
-// 		return apiResponse.ErrorResponse(res, err);
-// 	};
-// };
-
 const getAllCourses = async (req, res, next) => {
 	try {
-	//   const { userId } = req.params; // Assuming `userId` is passed as a URL parameter
-	  const userId = "66bb52c30f1c072ed04adb18";
-	  // Convert userId to ObjectId using the `new` keyword
-	  const userObjectId = new mongoose.Types.ObjectId(userId);
-  
-	  // Aggregate courses with purchase details specific to the user
-	  const CourseData = await CourseModel.aggregate([
-		{
-		  $lookup: {
-			from: "purchases",
-			let: { courseId: "$_id" },
-			pipeline: [
-			  {
-				$match: {
-				  $expr: {
-					$and: [
-					  { $eq: ["$courseId", "$$courseId"] },
-					  { $eq: ["$userId", userObjectId] }
-					]
-				  }
+		//   const { userId } = req.params; // Assuming `userId` is passed as a URL parameter
+		const token = req.headers.authorization;
+		const decoded = jwt.decode(token);
+		const userId = decoded._id;
+		const userObjectId = new ObjectId(userId);
+	
+		// Aggregate courses with purchase details specific to the user
+		const CourseData = await CourseModel.aggregate([
+			{
+				$lookup: {
+					from: "purchases",
+					let: { courseId: "$_id" },
+					pipeline: [
+						{
+							$match: {
+								$expr: {
+									$and: [
+										{ $eq: ["$courseId", "$$courseId"] },
+										{ $eq: ["$userId", userObjectId] }
+									]
+								}
+							}
+						}
+					],
+					as: "userPurchases"
 				}
-			  }
-			],
-			as: "userPurchases"
-		  }
-		},
-		{
-		  $addFields: {
-			is_purchase: {
-			  $cond: {
-				if: { $gt: [{ $size: "$userPurchases" }, 0] },
-				then: true,
-				else: false
-			  }
+			},
+			{
+				$addFields: {
+					is_purchase: {
+						$cond: {
+							if: { $gt: [{ $size: "$userPurchases" }, 0] },
+							then: true,
+							else: false
+						}
+					}
+				}
+			},
+			{
+				$project: {
+					courseName: 1,
+					courseFees: 1,
+					courseValidity: 1,
+					courseImage: 1,
+					is_purchase: 1,
+					userPurchases: 1 // Optionally include or exclude detailed user purchase information
+				}
 			}
-		  }
-		},
-		{
-		  $project: {
-			courseName: 1,
-			courseFees: 1,
-			courseValidity: 1,
-			courseImage: 1,
-			is_purchase: 1,
-			userPurchases: 1 // Optionally include or exclude detailed user purchase information
-		  }
-		}
-	  ]);
+		]);
   
 	  if (CourseData.length > 0) {
 		return apiResponse.successResponseWithData(res, "Course List with User Purchase Details.", CourseData);
@@ -282,9 +265,6 @@ const getAllCourses = async (req, res, next) => {
 	  return apiResponse.ErrorResponse(res, err);
 	}
 };
-  
-
-  
   
 const getClassByCourseId = async (req, res) => {
 	try {
@@ -456,4 +436,22 @@ const buyCourse = async (req, res, next) => {
 	return apiResponse.successResponseWithData(res,"You have sucessfully bought the course", 0);
 }
 
-module.exports = { signUp, login, verifyOtp, userProfile, updateUserProfile, getAllCourses, getClassByCourseId, getAllPdfNotes, getAllPreviousPapers, getAllSyllabus, getAllTestSeries, forgotPassword, resetPassword, buyCourse }
+const getAllBanners = async (req, res, next) => {
+	try {
+
+		const BannerData = await BannerModel.find().lean()
+
+		if (BannerData.length > 0) {
+
+			return apiResponse.successResponseWithData(res, "Banner List.", BannerData);
+		} else {
+			return apiResponse.notFoundResponse(res, "Banner not found");
+		}
+
+	} catch (err) {
+		console.log(err)
+		return apiResponse.ErrorResponse(res, err);
+	};
+};
+
+module.exports = { signUp, login, verifyOtp, userProfile, updateUserProfile, getAllCourses, getClassByCourseId, getAllPdfNotes, getAllPreviousPapers, getAllSyllabus, getAllTestSeries, forgotPassword, resetPassword, buyCourse, getAllBanners }

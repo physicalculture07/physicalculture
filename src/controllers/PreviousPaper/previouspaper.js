@@ -9,9 +9,12 @@ const apiResponse = require("../../helpers/apiResponse");
 const createPreviousPaper = async (req, res) => {
   try {
     const pdfUrl = req.files['pdfUrl'] ? req.files['pdfUrl'][0].key : null;
+    const pdfImage = req.files['pdfImage'] ? req.files['pdfImage'][0].key : null;
     const newPreviousPaper = new PreviousPapers({
       title: req.body.title,
-      pdfUrl: pdfUrl // Save the file path
+      description: req.body.description,
+      pdfUrl: pdfUrl,
+      pdfImage:pdfImage
     });
 
     const savedPreviousPaper = await newPreviousPaper.save();
@@ -52,20 +55,25 @@ const getPreviousPaperById = async (req, res) => {
 // Update a specific previous paper by ID
 const updatePreviousPaperById = async (req, res) => {
   try {
-    const { title } = req.body;
+    const { title, description } = req.body;
 
     const pdfUrl = req.files['pdfUrl'] ? req.files['pdfUrl'][0].key : null;
+    const pdfImage = req.files['pdfImage'] ? req.files['pdfImage'][0].key : null;
     const existingPreviousPaper = await PreviousPapers.findById(req.params.id);
 	  if (!existingPreviousPaper) {
 		  return res.status(404).json({ message: 'Class not found' });
 	  }
 
     if (title) existingPreviousPaper.title = title;
+    if (description) existingPreviousPaper.description = description;
   
 	  // Update classVideo and classNotes based on provided files
 	  if (pdfUrl) {
 		    existingPreviousPaper.pdfUrl = pdfUrl;
 	  }
+    if (pdfImage) {
+      existingPreviousPaper.pdfImage = pdfImage;
+  }
 
     const updatedPreviousPaper = await existingPreviousPaper.save();
 	  res.status(200).json(updatedPreviousPaper);
@@ -106,6 +114,9 @@ const deletePreviousPaperById = async (req, res, next) => {
 
 	  if (existingPreviousPaper.pdfUrl) {
 		  await deleteFileFromS3(existingPreviousPaper.pdfUrl);
+	  }
+    if (existingPreviousPaper.pdfImage) {
+		  await deleteFileFromS3(existingPreviousPaper.pdfImage);
 	  }
   
 	  // Delete the class from the database

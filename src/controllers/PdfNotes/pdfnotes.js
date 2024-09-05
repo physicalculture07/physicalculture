@@ -5,10 +5,13 @@ const apiResponse = require("../../helpers/apiResponse");
 const createPdfNote = async (req, res, next) => {
   try {
     const pdfUrl = req.files['pdfUrl'] ? req.files['pdfUrl'][0].key : null;
+	const pdfImage = req.files['pdfImage'] ? req.files['pdfImage'][0].key : null;
     
     const newPdfNote = new PdfNotes({
       pdfTitle: req.body.pdfTitle,
-      pdfUrl: pdfUrl // Save the file path
+	  description:req.body.description,
+      pdfUrl: pdfUrl,
+	  pdfImage: pdfImage
     });
 
     const savedPdfNote = await newPdfNote.save();
@@ -49,19 +52,25 @@ const getPdfNoteById = async (req, res) => {
 // Update a specific PDF note by ID
 const updatePdfNoteById = async (req, res) => {
   try {
-    const { pdfTitle } = req.body;
+    const { pdfTitle, description } = req.body;
     const pdfUrl = req.files['pdfUrl'] ? req.files['pdfUrl'][0].key : null;
+	const pdfImage = req.files['pdfImage'] ? req.files['pdfImage'][0].key : null;
+	
     const existingPdfNote = await PdfNotes.findById(req.params.id);
 	  if (!existingPdfNote) {
 		  return res.status(404).json({ message: 'Class not found' });
 	  }
 
     if (pdfTitle) existingPdfNote.pdfTitle = pdfTitle;
+	if (description) existingPdfNote.description = description;
   
 	  // Update classVideo and classNotes based on provided files
 	  if (pdfUrl) {
 		    existingPdfNote.pdfUrl = pdfUrl;
 	  }
+	 	 if (pdfImage) {
+			existingPdfNote.pdfImage = pdfImage;
+		}
 
     const updatedPdfNotes = await existingPdfNote.save();
 	  res.status(200).json(updatedPdfNotes);
@@ -101,6 +110,10 @@ const deletePdfNoteById = async (req, res, next) => {
 	  if (existingPdfNote.pdfUrl) {
 		  await deleteFileFromS3(existingPdfNote.pdfUrl);
 	  }
+
+	  if (existingPdfNote.pdfImage) {
+			await deleteFileFromS3(existingPdfNote.pdfImage);
+		}
   
 	  // Delete the class from the database
 	  await PdfNotes.findByIdAndDelete(req.params.id);

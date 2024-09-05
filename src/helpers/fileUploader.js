@@ -19,7 +19,16 @@ const cloudFolder = {
   TestSeriesPdf: "testseriespdf",
   ClassFiles:"classes",
   ClassNotesFiles:"classes/notes",
-  CourseFiles:"courseimages"
+
+  PdfNotesImages: "pdfnotes/images",
+  PreviousPapersImages: "previouspapers/images",
+  SyllabusPdfImages: "syllabuspdf/images",
+  TestSeriesPdfImages: "testseriespdf/images",
+  ClassFilesImages:"classes/images",
+
+
+  CourseFiles:"courseimages",
+  BannerFiles:"banners"
 };
 
 const s3Client = new S3Client({
@@ -63,11 +72,30 @@ const getObjectValue = async (modelName) => {
   return model;
 };
 
+// const filePdfFilter = (req, file, cb) => {
+//   if (file.mimetype === 'application/pdf') {
+//     cb(null, true);
+//   } else {
+//     cb(new Error('Invalid file type, only PDFs are allowed!'), false);
+//   }
+// };
+
 const filePdfFilter = (req, file, cb) => {
-  if (file.mimetype === 'application/pdf') {
-    cb(null, true);
+  // Allowed MIME types for PDFs and images
+  const allowedMimeTypes = [
+    'application/pdf',
+    'image/jpeg',
+    'image/png',
+    'image/gif',
+    'image/webp',
+    'image/bmp'
+  ];
+
+  // Check if the file's mimetype is in the allowed list
+  if (allowedMimeTypes.includes(file.mimetype)) {
+    cb(null, true); // Accept the file
   } else {
-    cb(new Error('Invalid file type, only PDFs are allowed!'), false);
+    cb(new Error('Invalid file type, only PDFs and images are allowed!'), false); // Reject the file
   }
 };
 
@@ -78,7 +106,31 @@ const pdfNotesUpload = multer({
       acl: 'public-read', // Set the appropriate permissions
       contentType: multerS3.AUTO_CONTENT_TYPE,
       key: function (req, file, cb) {
-          cb(null, `${cloudFolder.PdfNotes}/${Date.now()}_${file.originalname}`); // Customize the file key
+
+        let folderName = cloudFolder.PdfNotes;
+
+        // Set the folder name based on the field name
+        if (file.fieldname === 'pdfUrl') {
+          folderName = cloudFolder.PdfNotes;
+        } else if (file.fieldname === 'pdfImage') {
+          folderName = cloudFolder.PdfNotesImages;
+        }
+
+        cb(null, `${folderName}/${Date.now()}_${file.originalname}`); // Customize the file key
+        // cb(null, `${cloudFolder.folderName}/${Date.now()}_${file.originalname}`); // Customize the file key
+      }
+  }),
+  fileFilter: filePdfFilter
+});
+
+const bannerUpload = multer({
+  storage: multerS3({
+      s3: s3Client,
+      bucket: 'physicalcultureclassess',
+      acl: 'public-read', // Set the appropriate permissions
+      contentType: multerS3.AUTO_CONTENT_TYPE,
+      key: function (req, file, cb) {
+          cb(null, `${cloudFolder.BannerFiles}/${Date.now()}_${file.originalname}`); // Customize the file key
       }
   }),
   fileFilter: filePdfFilter
@@ -110,6 +162,8 @@ const classUpload = multer({
           folderName = cloudFolder.ClassFiles;
         } else if (file.fieldname === 'classNotes') {
           folderName = cloudFolder.ClassNotesFiles;
+        } else if (file.fieldname === 'classImage') {
+          folderName = cloudFolder.ClassFilesImages;
         }
         cb(null, `${folderName}/${Date.now()}_${file.originalname}`); // Customize the file key
       }
@@ -128,23 +182,18 @@ const classUpload = multer({
       } else {
         cb(new Error('Only MP4 files are allowed for classVideo!'), false); // Reject non-MP4 files
       }
-    } else {
+    } 
+    else if (file.fieldname === 'classImage') {
+      
+      cb(null, true); // Accept MP4 files
+     
+    }
+    else {
       cb(new Error('Unexpected field!'), false); // Reject any other fields
     }
   }
 });
 
-const classNotesUpload = multer({
-  storage: multerS3({
-      s3: s3Client,
-      bucket: 'physicalcultureclassess',
-      acl: 'public-read', // Set the appropriate permissions
-      contentType: multerS3.AUTO_CONTENT_TYPE,
-      key: function (req, file, cb) {
-          cb(null, `${cloudFolder.ClassNotesFiles}/${Date.now()}_${file.originalname}`); // Customize the file key
-      }
-  })
-});
 
 const testSeriesPdfUpload = multer({
   storage: multerS3({
@@ -153,7 +202,17 @@ const testSeriesPdfUpload = multer({
       acl: 'public-read', // Set the appropriate permissions
       contentType: multerS3.AUTO_CONTENT_TYPE,
       key: function (req, file, cb) {
-          cb(null, `${cloudFolder.TestSeriesPdf}/${Date.now()}_${file.originalname}`); // Customize the file key
+          let folderName = cloudFolder.TestSeriesPdf;
+
+          // Set the folder name based on the field name
+          if (file.fieldname === 'pdfUrl') {
+            folderName = cloudFolder.TestSeriesPdf;
+          } else if (file.fieldname === 'pdfImage') {
+            folderName = cloudFolder.TestSeriesPdfImages;
+          }
+
+          cb(null, `${folderName}/${Date.now()}_${file.originalname}`); 
+          // cb(null, `${cloudFolder.TestSeriesPdf}/${Date.now()}_${file.originalname}`); // Customize the file key
       }
   }),
   fileFilter: filePdfFilter
@@ -166,7 +225,17 @@ const syllabusPdfUpload = multer({
       acl: 'public-read', // Set the appropriate permissions
       contentType: multerS3.AUTO_CONTENT_TYPE,
       key: function (req, file, cb) {
-          cb(null, `${cloudFolder.SyllabusPdf}/${Date.now()}_${file.originalname}`); // Customize the file key
+          let folderName = cloudFolder.SyllabusPdf;
+
+            // Set the folder name based on the field name
+          if (file.fieldname === 'pdfUrl') {
+            folderName = cloudFolder.SyllabusPdf;
+          } else if (file.fieldname === 'pdfImage') {
+            folderName = cloudFolder.SyllabusPdfImages;
+          }
+
+          cb(null, `${folderName}/${Date.now()}_${file.originalname}`); 
+          // cb(null, `${cloudFolder.SyllabusPdf}/${Date.now()}_${file.originalname}`); // Customize the file key
       }
   }),
   fileFilter: filePdfFilter
@@ -179,7 +248,17 @@ const previousPapersUpload = multer({
       acl: 'public-read', // Set the appropriate permissions
       contentType: multerS3.AUTO_CONTENT_TYPE,
       key: function (req, file, cb) {
-          cb(null, `${cloudFolder.PreviousPapers}/${Date.now()}_${file.originalname}`); // Customize the file key
+          let folderName = cloudFolder.PreviousPapers;
+
+            // Set the folder name based on the field name
+          if (file.fieldname === 'pdfUrl') {
+            folderName = cloudFolder.PreviousPapers;
+          } else if (file.fieldname === 'pdfImage') {
+            folderName = cloudFolder.PreviousPapersImages;
+          }
+
+          cb(null, `${folderName}/${Date.now()}_${file.originalname}`); 
+          // cb(null, `${cloudFolder.PreviousPapers}/${Date.now()}_${file.originalname}`); // Customize the file key
       }
   }),
   fileFilter: filePdfFilter
@@ -220,4 +299,4 @@ const deleteFileFromS3 = async (key) => {
 
 
 
-module.exports = { fileUploadDirectoryCheck, pdfNotesUpload, classUpload,classNotesUpload, testSeriesPdfUpload, syllabusPdfUpload, previousPapersUpload, deleteFileFromS3, courseUpload };
+module.exports = { fileUploadDirectoryCheck, pdfNotesUpload, classUpload, testSeriesPdfUpload, syllabusPdfUpload, previousPapersUpload, deleteFileFromS3, courseUpload, bannerUpload };

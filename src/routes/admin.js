@@ -8,11 +8,13 @@ const {
   testSeriesPdfUpload,
   classNotesUpload,
   courseUpload,
+  bannerUpload,
 } = require("../helpers/fileUploader");
 
 const courses = require("../controllers/Course/courses");
 const classes = require("../controllers/Classess/classess");
 const pdfnotes = require("../controllers/PdfNotes/pdfnotes");
+const banners = require("../controllers/Banner/banner");
 const previouspaper = require("../controllers/PreviousPaper/previouspaper");
 const syllabus = require("../controllers/Syllabus/syllabus");
 const testseries = require("../controllers/TestSeries/testseries");
@@ -74,6 +76,7 @@ router.post(
     classUpload.fields([
       { name: "classVideo", maxCount: 1 },
       { name: "classNotes", maxCount: 1 },
+      { name: "classImage", maxCount: 1 },
     ])(req, res, (err) => {
       if (err) {
         // If a Multer error occurred, return it to the client
@@ -91,9 +94,11 @@ router.put(
     classUpload.fields([
       { name: "classVideo", maxCount: 1 },
       { name: "classNotes", maxCount: 1 },
+      { name: "classImage", maxCount: 1 },
     ])(req, res, (err) => {
       if (err) {
         // If a Multer error occurred, return it to the client
+        console.log(err);
         return res.status(400).json({ message: err.message, status: false });
       }
       // Proceed to the next middleware or route handler
@@ -110,7 +115,7 @@ router.get("/all_pdfnotes/:id", pdfnotes.getPdfNoteById);
 router.post(
   "/create_pdfnotes",
   (req, res, next) => {
-    pdfNotesUpload.fields([{ name: "pdfUrl", maxCount: 1 }])(
+    pdfNotesUpload.fields([{ name: "pdfUrl", maxCount: 1 },{ name: "pdfImage", maxCount: 1 }])(
       req,
       res,
       (err) => {
@@ -127,7 +132,7 @@ router.post(
 router.put(
   "/edit_pdfnotes/:id",
   (req, res, next) => {
-    pdfNotesUpload.fields([{ name: "pdfUrl", maxCount: 1 }])(
+    pdfNotesUpload.fields([{ name: "pdfUrl", maxCount: 1 }, { name: "pdfImage", maxCount: 1 }])(
       req,
       res,
       (err) => {
@@ -139,6 +144,7 @@ router.put(
       }
     );
   },
+  
   pdfnotes.updatePdfNoteById
 );
 router.delete("/remove_pdfnotes/:id", pdfnotes.deletePdfNoteById);
@@ -149,7 +155,7 @@ router.get("/all_previouspapers/:id", previouspaper.getPreviousPaperById);
 router.post(
   "/createPreviousPaper",
   (req, res, next) => {
-    previousPapersUpload.fields([{ name: "pdfUrl", maxCount: 1 }])(
+    previousPapersUpload.fields([{ name: "pdfUrl", maxCount: 1 }, { name: "pdfImage", maxCount: 1 }])(
       req,
       res,
       (err) => {
@@ -166,7 +172,7 @@ router.post(
 router.put(
   "/edit_previouspaper/:id",
   (req, res, next) => {
-    previousPapersUpload.fields([{ name: "pdfUrl", maxCount: 1 }])(
+    previousPapersUpload.fields([{ name: "pdfUrl", maxCount: 1 }, { name: "pdfImage", maxCount: 1 }])(
       req,
       res,
       (err) => {
@@ -188,7 +194,7 @@ router.get("/all_syllabus/:id", syllabus.getSyllabusById);
 router.post(
   "/createSyllabus",
   (req, res, next) => {
-    syllabusPdfUpload.fields([{ name: "pdfUrl", maxCount: 1 }])(
+    syllabusPdfUpload.fields([{ name: "pdfUrl", maxCount: 1 }, { name: "pdfImage", maxCount: 1 }])(
       req,
       res,
       (err) => {
@@ -202,9 +208,9 @@ router.post(
   syllabus.createSyllabus
 );
 router.put(
-  "/edit_syllabus",
+  "/edit_syllabus/:id",
   (req, res, next) => {
-    syllabusPdfUpload.fields([{ name: "pdfUrl", maxCount: 1 }])(
+    syllabusPdfUpload.fields([{ name: "pdfUrl", maxCount: 1 }, { name: "pdfImage", maxCount: 1 }])(
       req,
       res,
       (err) => {
@@ -225,7 +231,7 @@ router.get("/all_testSeries/:id", testseries.getTestSeriesById);
 router.post(
   "/createTestSeries",
   (req, res, next) => {
-    testSeriesPdfUpload.fields([{ name: "pdfUrl", maxCount: 1 }])(
+    testSeriesPdfUpload.fields([{ name: "pdfUrl", maxCount: 1 }, { name: "pdfImage", maxCount: 1 }])(
       req,
       res,
       (err) => {
@@ -242,7 +248,7 @@ router.post(
 router.put(
   "/edit_testseries/:id",
   (req, res, next) => {
-    testSeriesPdfUpload.fields([{ name: "pdfUrl", maxCount: 1 }])(
+    testSeriesPdfUpload.fields([{ name: "pdfUrl", maxCount: 1 }, { name: "pdfImage", maxCount: 1 }])(
       req,
       res,
       (err) => {
@@ -256,6 +262,46 @@ router.put(
   testseries.updateTestSeriesById
 );
 router.delete("/remove_testseries/:id", testseries.deleteTestSeriesById);
+
+
+// pdfnotes admin routes
+router.get("/all_banners", banners.getAllBanner);
+router.get("/all_banners/:id", banners.getBannerById);
+router.post(
+  "/create_banners",
+  (req, res, next) => {
+    bannerUpload.fields([{ name: "bannerUrl", maxCount: 1 }, { name: "pdfImage", maxCount: 1 }])(
+      req,
+      res,
+      (err) => {
+        if (err) {
+          // If a Multer error occurred, return it to the client
+          return res.status(400).json({ message: err.message, status: false });
+        }
+        next();
+      }
+    );
+  },
+  banners.createBanner
+);
+router.put(
+  "/edit_banners/:id",
+  (req, res, next) => {
+    bannerUpload.fields([{ name: "bannerUrl", maxCount: 1 }, { name: "pdfImage", maxCount: 1 }])(
+      req,
+      res,
+      (err) => {
+        if (err) {
+          // If a Multer error occurred, return it to the client
+          return res.status(400).json({ message: err.message, status: false });
+        }
+        next();
+      }
+    );
+  },
+  banners.updateBannerById
+);
+router.delete("/remove_banners/:id", banners.deleteBannerById);
 
 
 module.exports = router;

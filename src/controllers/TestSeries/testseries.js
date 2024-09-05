@@ -6,9 +6,12 @@ const apiResponse = require("../../helpers/apiResponse");
 const createTestSeries = async (req, res) => {
   try {
     const pdfUrl = req.files['pdfUrl'] ? req.files['pdfUrl'][0].key : null;
+	const pdfImage = req.files['pdfImage'] ? req.files['pdfImage'][0].key : null;
     const newtestseries = new TestSeriesModel({
         testSeriesTitle: req.body.testSeriesTitle,
-      pdfUrl: pdfUrl // Save the file path
+		description: req.body.description,
+      pdfUrl: pdfUrl,
+	  pdfImage:pdfImage
     });
 
     const savedtestseries = await newtestseries.save();
@@ -49,20 +52,25 @@ const getTestSeriesById = async (req, res) => {
 
 const updateTestSeriesById = async (req, res) => {
   try {
-    const { testSeriesTitle } = req.body;
+    const { testSeriesTitle, description } = req.body;
 
     const pdfUrl = req.files['pdfUrl'] ? req.files['pdfUrl'][0].key : null;
+	const pdfImage = req.files['pdfImage'] ? req.files['pdfImage'][0].key : null;
     const existingTestSeries = await TestSeriesModel.findById(req.params.id);
 	  if (!existingTestSeries) {
 		  return res.status(404).json({ message: 'Class not found' });
 	  }
 
     if (testSeriesTitle) existingTestSeries.testSeriesTitle = testSeriesTitle;
+	if (description) existingTestSeries.description = description;
   
 	  // Update classVideo and classNotes based on provided files
 	  if (pdfUrl) {
 		    existingTestSeries.pdfUrl = pdfUrl;
 	  }
+	  if (pdfImage) {
+		existingTestSeries.pdfImage = pdfImage;
+  }
 
     const updatedTestSeries = await existingTestSeries.save();
 	  res.status(200).json(updatedTestSeries);
@@ -87,6 +95,10 @@ const deleteTestSeriesById = async (req, res, next) => {
 	  if (existingTestSeries.pdfUrl) {
 		  await deleteFileFromS3(existingTestSeries.pdfUrl);
 	  }
+
+	  if (existingTestSeries.pdfImage) {
+		await deleteFileFromS3(existingTestSeries.pdfImage);
+	}
   
 	  // Delete the class from the database
 	  await TestSeriesModel.findByIdAndDelete(req.params.id);

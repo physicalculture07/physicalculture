@@ -6,7 +6,7 @@ dotenv.config();
 
 const isAuth = async(req, res, next) => {
 
-    let tokenheaderkey = process.env.TOKEN_HEADER_KEY;
+    // let tokenheaderkey = process.env.TOKEN_HEADER_KEY;
     let jwtSecretKey = process.env.JWT_SECRET;
 
     try {

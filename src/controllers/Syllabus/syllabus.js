@@ -6,9 +6,12 @@ const apiResponse = require("../../helpers/apiResponse");
 const createSyllabus = async (req, res) => {
   try {
     const pdfUrl = req.files['pdfUrl'] ? req.files['pdfUrl'][0].key : null;
+	const pdfImage = req.files['pdfImage'] ? req.files['pdfImage'][0].key : null;
     const newsyllabusModel = new SyllabusModel({
         syllabusTitle: req.body.syllabusTitle,
-      pdfUrl: pdfUrl // Save the file path
+		description: req.body.description,
+      pdfUrl: pdfUrl,
+	  pdfImage:pdfImage
     });
 
     const savedsyllabusModel = await newsyllabusModel.save();
@@ -49,20 +52,25 @@ const getSyllabusById = async (req, res) => {
 
 const updateSyllabusById = async (req, res) => {
   try {
-    const { syllabusTitle } = req.body;
+    const { syllabusTitle , description} = req.body;
 
     const pdfUrl = req.files['pdfUrl'] ? req.files['pdfUrl'][0].key : null;
+	const pdfImage = req.files['pdfImage'] ? req.files['pdfImage'][0].key : null;
     const existingSyllabus = await SyllabusModel.findById(req.params.id);
 	  if (!existingSyllabus) {
 		  return res.status(404).json({ message: 'Class not found' });
 	  }
 
     if (syllabusTitle) existingSyllabus.syllabusTitle = syllabusTitle;
+	if (description) existingSyllabus.description = description;
   
 	  // Update classVideo and classNotes based on provided files
 	  if (pdfUrl) {
 		    existingSyllabus.pdfUrl = pdfUrl;
 	  }
+	  if (pdfImage) {
+		existingSyllabus.pdfImage = pdfImage;
+  }
 
     const updatedSyllabus = await existingSyllabus.save();
 	  res.status(200).json(updatedSyllabus);
@@ -87,6 +95,9 @@ const deleteSyllabusById = async (req, res, next) => {
 	  if (existingSyllabus.pdfUrl) {
 		  await deleteFileFromS3(existingSyllabus.pdfUrl);
 	  }
+	  if (existingSyllabus.pdfImage) {
+		await deleteFileFromS3(existingSyllabus.pdfImage);
+	}
   
 	  // Delete the class from the database
 	  await SyllabusModel.findByIdAndDelete(req.params.id);

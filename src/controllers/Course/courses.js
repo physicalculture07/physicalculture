@@ -8,9 +8,9 @@ const createCourse = async (req, res, next) => {
 
 	try {
 
-		const {courseName, courseFees, courseValidity} = req.body;
+		const {courseName, courseFees, courseValidity, description} = req.body;
 		const courseImage = req.files['courseImage'] ? req.files['courseImage'][0].location : null;
-		const CourseData = new CourseModel({courseName : courseName, courseFees: courseFees, courseValidity: courseValidity, courseImage: courseImage});
+		const CourseData = new CourseModel({courseName : courseName, courseFees: courseFees, courseValidity: courseValidity, courseImage: courseImage, description:description});
 		CourseData.save()
 		return apiResponse.successResponseWithData(res, "Course Created.", CourseData);
 	} catch (err) {
@@ -88,7 +88,7 @@ const updateCourse = async (req, res) => {
 	
 	try {
 		
-		const {courseName, courseFees,courseValidity } = req.body;
+		const {courseName, courseFees,courseValidity, description } = req.body;
 		const courseImage = req.files['courseImage'] ? req.files['courseImage'][0].key : null;
 		await CourseModel.findById(req.params.id).then(function (data, err) {
 			if (err) {
@@ -99,6 +99,7 @@ const updateCourse = async (req, res) => {
 	  			if (courseFees) data.courseFees = courseFees;
 				if (courseValidity) data.courseValidity = courseValidity;
 				if (courseImage) data.courseImage = courseImage;
+				if (description) data.description = description;
 
 				data.save();
 
