@@ -249,7 +249,7 @@ const getAllCourses = async (req, res, next) => {
 					courseValidity: 1,
 					courseImage: 1,
 					is_purchase: 1,
-					userPurchases: 1 // Optionally include or exclude detailed user purchase information
+					userPurchases: 0 // Optionally include or exclude detailed user purchase information
 				}
 			}
 		]);
@@ -421,7 +421,8 @@ const buyCourse = async (req, res, next) => {
 	
 	const course = await CourseModel.findById(courseId);
 	if (!course) {
-	  throw new Error("Course not found");
+	//   throw new Error("Course not found");
+	  return res.status(404).json({ message: 'Course not found' });
 	}
   
 	const purchase = new PurchaseModel({
