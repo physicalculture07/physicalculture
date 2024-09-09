@@ -107,7 +107,7 @@ const getClassById = async (req, res) => {
 const createClass = async (req, res, next) => {
 	
 	try {
-	  const { courseId, className,classDescription } = req.body;
+	  const { courseId, className,classDescription,classType } = req.body;
 	  const classVideo = req.files['classVideo'] ? req.files['classVideo'][0].location : null;
 	  const classImage = req.files['classImage'] ? req.files['classImage'][0].location : null;
 	  const classNotes = req.files['classNotes'] ? req.files['classNotes'][0].location : null;
@@ -122,6 +122,7 @@ const createClass = async (req, res, next) => {
 			courseId,
 			className,
 			classDescription,
+			classType,
 			classVideo:req.files['classVideo'][0].key,
 			classImage:req.files['classImage'][0].key,
 			classNotes:req.files['classNotes'][0].key,
@@ -177,7 +178,7 @@ const createClass = async (req, res, next) => {
 //   /classes/:id  put
 const updateClassesById = async (req, res, next) => {
 	try {
-	  const { courseId, className, classDescription } = req.body;
+	  const { courseId, className, classDescription, classType } = req.body;
 	  const classVideo = req.files['classVideo'] ? req.files['classVideo'][0].key : null;
 	  const classImage = req.files['classImage'] ? req.files['classImage'][0].key : null;
 	  const classNotes = req.files['classNotes'] ? req.files['classNotes'][0].key : null;
@@ -191,6 +192,7 @@ const updateClassesById = async (req, res, next) => {
 	  if (courseId) existingClass.courseId = courseId;
 	  if (className) existingClass.className = className;
 	  if (classDescription) existingClass.classDescription = classDescription;
+	  if (classType) existingClass.classType = classType;
   
 	  // Update classVideo and classNotes based on provided files
 	  if (classImage) {
