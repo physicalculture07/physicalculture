@@ -19,6 +19,7 @@ router.get("/all_syllabus", isAuth, apiController.getAllSyllabus)
 router.get("/all_testseries", isAuth, apiController.getAllTestSeries)
 router.get("/all_banner", isAuth, apiController.getAllBanners)
 router.post("/buy_course", isAuth, apiController.buyCourse)
+router.post("/download_class_video",isAuth, apiController.downloadClassVideo);
 
 
 module.exports = router;

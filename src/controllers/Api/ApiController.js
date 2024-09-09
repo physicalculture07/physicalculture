@@ -455,4 +455,24 @@ const getAllBanners = async (req, res, next) => {
 	};
 };
 
-module.exports = { signUp, login, verifyOtp, userProfile, updateUserProfile, getAllCourses, getClassByCourseId, getAllPdfNotes, getAllPreviousPapers, getAllSyllabus, getAllTestSeries, forgotPassword, resetPassword, buyCourse, getAllBanners }
+const downloadClassVideo = async (req, res, next) => {
+	try {
+	  const { classId, isClassVideoDownloaded } = req.body;
+	  
+  
+	  const existingClass = await ClassModel.findById(classId);
+	  if (!existingClass) {
+		return res.status(404).json({ message: 'Class not found' });
+	  }
+  
+	  // Update courseId and className if provided
+	  if (isClassVideoDownloaded) existingClass.isClassVideoDownloaded = isClassVideoDownloaded;
+
+	  const updatedClass = await existingClass.save();
+	  return apiResponse.successResponseWithData(res, "Class List.", updatedClass);
+	} catch (error) {
+	  res.status(500).json({ message: error.message });
+	}
+};
+
+module.exports = { signUp, login, verifyOtp, userProfile, updateUserProfile, getAllCourses, getClassByCourseId, getAllPdfNotes, getAllPreviousPapers, getAllSyllabus, getAllTestSeries, forgotPassword, resetPassword, buyCourse, getAllBanners, downloadClassVideo }

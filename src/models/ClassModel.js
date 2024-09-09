@@ -10,6 +10,7 @@ var classSchema = new Schema({
 	classImage:{ type: String, required: false },
 	classVideo:{ type: String, required: false },
 	classNotes: { type: String, required: false },
+	isClassVideoDownloaded: { type: Boolean, required: false, default:false },
 }, { timestamps: true });
 
 module.exports = mongoose.model("Class", classSchema);
