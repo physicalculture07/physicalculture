@@ -125,19 +125,22 @@ const login = async(req, res) => {
         const user = await UserModel.findOne({ mobileNo }).lean();
 
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            // return res.status(404).json({ message: 'User not found' });
+			return apiResponse.validationErrorWithData(res, "User not found", {}, 0)
         }
 
         // Validate password
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
-            return res.status(401).json({ message: 'Invalid credentials' });
+            // return res.status(401).json({ message: 'Invalid credentials' });
+			return apiResponse.validationErrorWithData(res, "Invalid credentials", {}, 0)
         }
 
 		const userDevice = await UserModel.findOne({ mobileNo, deviceId });
 		if (!userDevice) {
-            return res.status(404).json({ message: 'Please login on same device or contact to app admin' });
+            // return res.status(404).json({ message: 'Please login on same device or contact to app admin' });
+			return apiResponse.validationErrorWithData(res, "Please login on same device or contact to app admin", {}, 0)
         }
 
 		if(!userDevice.isMobileVerified){
@@ -155,8 +158,9 @@ const login = async(req, res) => {
         // Return token and user details
 		return apiResponse.successResponseWithData(res,"login Success.", data={token, user: { _id: user._id, firstName: user.firstName, lastName: user.lastName }, is_otp:false}, 0);
     } catch (error) {
-		console.log(error);
-        res.status(500).json({ message: 'Failed to login' });
+		// console.log(error);
+        // res.status(500).json({ message: 'Failed to login' });
+		return apiResponse.validationErrorWithData(res, "Failed to login", {}, 0)
     }
 }
 
@@ -273,6 +277,7 @@ const getClassByCourseId = async (req, res) => {
 	  return apiResponse.successResponseWithData(res, "Class List.", classData);
 	} catch (err) {
 	  res.status(400).json({ error: err.message });
+	  return apiResponse.validationErrorWithData(res, err.message, {}, 0)
 	}
 };
 
@@ -356,12 +361,14 @@ const forgotPassword = async (req, res, next) => {
         const user = await UserModel.findOne({ mobileNo }).lean();
 
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            // return res.status(404).json({ message: 'User not found' });
+			return apiResponse.validationErrorWithData(res, "User not found", {}, 0)
         }
 
 		const userDevice = await UserModel.findOne({ mobileNo, deviceId });
 		if (!userDevice) {
-            return res.status(404).json({ message: 'Please login on same device or contact to app admin' });
+            // return res.status(404).json({ message: 'Please login on same device or contact to app admin' });
+			return apiResponse.validationErrorWithData(res, "Please login on same device or contact to app admin", {}, 0)
         }
 
 		
@@ -375,7 +382,8 @@ const forgotPassword = async (req, res, next) => {
         
     } catch (error) {
 		console.log(error);
-        res.status(500).json({ message: 'Failed to login' });
+        // res.status(500).json({ message: 'Failed to login' });
+		return apiResponse.validationErrorWithData(res, "Failed to login", {}, 0)
     }
 }
 
@@ -387,7 +395,8 @@ const resetPassword = async (req, res, next) => {
 
 		if(password != confirm_password){
 			
-			return res.status(404).json({ message: 'please enter same password' });
+			// return res.status(404).json({ message: 'please enter same password' });
+			return apiResponse.validationErrorWithData(res, "please enter same password", {}, 0)
 			
 		}
         const user = await UserModel.findOne({ mobileNo }).lean();
@@ -398,7 +407,8 @@ const resetPassword = async (req, res, next) => {
 
 		const userDevice = await UserModel.findOne({ mobileNo, deviceId });
 		if (!userDevice) {
-            return res.status(404).json({ message: 'Please login on same device or contact to app admin' });
+            // return res.status(404).json({ message: 'Please login on same device or contact to app admin' });
+			return apiResponse.validationErrorWithData(res, "Please login on same device or contact to app admin", {}, 0)
         }
 
 		// otp sent logic goes here
@@ -411,7 +421,8 @@ const resetPassword = async (req, res, next) => {
         
     } catch (error) {
 		console.log(error);
-        res.status(500).json({ message: 'Failed to login' });
+        // res.status(500).json({ message: 'Failed to login' });
+		return apiResponse.validationErrorWithData(res, "Failed to login", {}, 0)
     }
 }
 
@@ -422,7 +433,8 @@ const buyCourse = async (req, res, next) => {
 	const course = await CourseModel.findById(courseId);
 	if (!course) {
 	//   throw new Error("Course not found");
-	  return res.status(404).json({ message: 'Course not found' });
+	//   return res.status(404).json({ message: 'Course not found' });
+	  return apiResponse.validationErrorWithData(res, "Course not found", {}, 0)
 	}
   
 	const purchase = new PurchaseModel({
@@ -462,7 +474,8 @@ const downloadClassVideo = async (req, res, next) => {
   
 	  const existingClass = await ClassModel.findById(classId);
 	  if (!existingClass) {
-		return res.status(404).json({ message: 'Class not found' });
+		// return res.status(404).json({ message: 'Class not found' });
+		return apiResponse.validationErrorWithData(res, "Class not found", {}, 0)
 	  }
   
 	  // Update courseId and className if provided
@@ -471,7 +484,8 @@ const downloadClassVideo = async (req, res, next) => {
 	  const updatedClass = await existingClass.save();
 	  return apiResponse.successResponseWithData(res, "Class List.", updatedClass);
 	} catch (error) {
-	  res.status(500).json({ message: error.message });
+	//   res.status(500).json({ message: error.message });
+	  return apiResponse.validationErrorWithData(res, error.message, {}, 0)
 	}
 };
 
