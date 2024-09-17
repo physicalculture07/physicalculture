@@ -137,11 +137,11 @@ const login = async(req, res) => {
 			return apiResponse.validationErrorWithData(res, "Invalid credentials", {}, 0)
         }
 
-		const userDevice = await UserModel.findOne({ mobileNo, deviceId });
-		if (!userDevice) {
-            // return res.status(404).json({ message: 'Please login on same device or contact to app admin' });
-			return apiResponse.validationErrorWithData(res, "Please login on same device or contact to app admin", {}, 0)
-        }
+		// const userDevice = await UserModel.findOne({ mobileNo, deviceId });
+		// if (!userDevice) {
+        //     // return res.status(404).json({ message: 'Please login on same device or contact to app admin' });
+		// 	return apiResponse.validationErrorWithData(res, "Please login on same device or contact to app admin", {}, 0)
+        // }
 
 		if(!userDevice.isMobileVerified){
 			// otp sent logic goes here
