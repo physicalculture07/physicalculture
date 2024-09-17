@@ -14,10 +14,12 @@ const isAuth = async(req, res, next) => {
         const deviceId = req.headers.deviceid;
 
         if (!token) {
-            return res.status(401).json({ message: 'No token provided' });
+            // return res.status(401).json({ message: 'No token provided' });
+            return apiResponse.validationErrorWithData(res, "No token provided", {}, 0)
         }
         if (!deviceId) {
-            return res.status(401).json({ message: 'Device not registered' });
+            // return res.status(401).json({ message: 'Device not registered' });
+            return apiResponse.validationErrorWithData(res, "Device not registered", {}, 0)
         }
 
         const verified = jwt.verify(token, jwtSecretKey);
