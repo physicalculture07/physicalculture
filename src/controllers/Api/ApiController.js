@@ -119,6 +119,7 @@ const signUp = async(req, res) => {
 
 const login = async(req, res) => {
 	const { mobileNo, password, deviceId } = req.body;
+	console.log("body------",req.body);
 
     try {
         // Check if the user exists
