@@ -17,7 +17,7 @@ router.get("/all_notes", isAuth, apiController.getAllPdfNotes)
 router.get("/all_previous_papers", isAuth, apiController.getAllPreviousPapers)
 router.get("/all_syllabus", isAuth, apiController.getAllSyllabus)
 router.get("/all_testseries", isAuth, apiController.getAllTestSeries)
-router.get("/all_banner", isAuth, apiController.getAllBanners)
+// router.get("/all_banner", isAuth, apiController.getAllBanners)
 router.post("/buy_course", isAuth, apiController.buyCourse)
 router.post("/download_class_video",isAuth, apiController.downloadClassVideo);
 
@@ -29,7 +29,7 @@ router.post("/download_class_video",isAuth, apiController.downloadClassVideo);
 // router.get("/all_previous_papers", apiController.getAllPreviousPapers)
 // router.get("/all_syllabus", apiController.getAllSyllabus)
 // router.get("/all_testseries", apiController.getAllTestSeries)
-// router.get("/all_banner", apiController.getAllBanners)
+router.get("/all_banner", apiController.getAllBanners)
 // router.post("/buy_course", apiController.buyCourse)
 // router.post("/download_class_video", apiController.downloadClassVideo);
 
