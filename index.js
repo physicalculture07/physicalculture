@@ -24,14 +24,14 @@ app.use("/uploads", express.static(path.join(__dirname, '../uploads')));
 app.use("/", apiRoRouter)
 app.use("/admin/", adminRouter)
 
-process.on('uncaughtException', (err) => {
-    console.log(`Uncaught Exception`);
-  });
+// process.on('uncaughtException', (err) => {
+//     console.log(`Uncaught Exception`);
+//   });
   
-  // Global error handler for unhandled promise rejections
-  process.on('unhandledRejection', (reason, promise) => {
-    console.log('Unhandled Rejection:');
-  });
+//   // Global error handler for unhandled promise rejections
+//   process.on('unhandledRejection', (reason, promise) => {
+//     console.log('Unhandled Rejection:');
+//   });
 
 
 const options = {
