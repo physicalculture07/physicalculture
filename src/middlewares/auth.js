@@ -13,11 +13,15 @@ const isAuth = async(req, res, next) => {
         const token = req.headers.authorization;
         const deviceId = req.headers.deviceid;
 
+        console.log("Invalid 11111----", req.headers);
+
         if (!token) {
+            console.log("Invalid sdfsdf");
             // return res.status(401).json({ message: 'No token provided' });
             return apiResponse.validationErrorWithData(res, "No token provided", {}, 0)
         }
         if (!deviceId) {
+            console.log("Invalid dfsdf");
             // return res.status(401).json({ message: 'Device not registered' });
             return apiResponse.validationErrorWithData(res, "Device not registered", {}, 0)
         }
@@ -33,10 +37,13 @@ const isAuth = async(req, res, next) => {
 
             if(deviceId != verified.deviceId){
                 // return res.status(404).json({ message: 'Invalid device' });
+                console.log("Invalid device");
                 return apiResponse.successResponseforAdmin(res, "Invalid device.");
             }
+            console.log("done");
             next();
         } else {
+            console.log("Invalid token");
             return apiResponse.unauthorizedResponse(res, "Invalid token.");
         }
     } catch (err) {
