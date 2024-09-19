@@ -169,7 +169,7 @@ const login = async(req, res) => {
         // Return token and user details
 		return apiResponse.successResponseWithData(res,"login Success.", data={token, user: { _id: user._id, firstName: user.firstName, lastName: user.lastName }, is_otp:true}, 0);
     } catch (error) {
-		// console.log(error);
+		console.log(error);
         // res.status(500).json({ message: 'Failed to login' });
 		return apiResponse.validationErrorWithData(res, "Failed to login", {}, 0)
     }
