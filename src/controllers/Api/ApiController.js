@@ -145,26 +145,24 @@ const login = async(req, res) => {
 			await user.save();
 		}
 
-		user = user.toObject();
-
-		const userDevice = await UserModel.findOne({ mobileNo, deviceId });
 
 
-		if (!userDevice) {
-            // return res.status(404).json({ message: 'Please login on same device or contact to app admin' });
-			return apiResponse.validationErrorWithData(res, "Please login on same device or contact to app admin", {}, 0)
-        }
+		// if (user.deviceId != deviceId) {
+        //     // return res.status(404).json({ message: 'Please login on same device or contact to app admin' });
+		// 	return apiResponse.validationErrorWithData(res, "Please login on same device or contact to app admin", {}, 0)
+        // }
 
-		if(!userDevice.isMobileVerified){
+		if(!user.isMobileVerified){
 			// otp sent logic goes here
-			userDevice.otp = '123456';
-			userDevice.save();
+			user.otp = '123456';
+			user.save();
 
 			return apiResponse.successResponseWithData(res,"please verify your mobile number", {is_otp: false}, 0);
 			
 		}
 
         // Generate JWT token
+		user = user.toObject();
         const token = generateToken(user);
 
         // Return token and user details
@@ -180,7 +178,8 @@ const verifyOtp = async(req, res, next) => {
 	try {
 		const { mobileNo, otp, deviceId } = req.body;
 		
-		const checkUserExists =await UserModel.findOne({ mobileNo, deviceId });
+		// const checkUserExists =await UserModel.findOne({ mobileNo, deviceId });
+		const checkUserExists =await UserModel.findOne({ mobileNo });
 		
 		if (checkUserExists) {
 			
