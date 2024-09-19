@@ -144,6 +144,7 @@ const login = async(req, res) => {
 		}
 
 		user = await user.lean();
+		console.log("user", user)
 
 		const userDevice = await UserModel.findOne({ mobileNo, deviceId });
 
