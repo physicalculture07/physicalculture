@@ -143,8 +143,7 @@ const login = async(req, res) => {
 			await user.save();
 		}
 
-		user = await user.lean();
-		console.log("user", user)
+		user = user.toObject();
 
 		const userDevice = await UserModel.findOne({ mobileNo, deviceId });
 
