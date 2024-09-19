@@ -123,7 +123,7 @@ const login = async(req, res) => {
 
     try {
         // Check if the user exists
-        const user = await UserModel.findOne({ mobileNo }).lean();
+        let user = await UserModel.findOne({ mobileNo });
 
         if (!user) {
             // return res.status(404).json({ message: 'User not found' });
@@ -138,7 +138,16 @@ const login = async(req, res) => {
 			return apiResponse.validationErrorWithData(res, "Invalid credentials", {}, 0)
         }
 
+		if(user.deviceId == null){
+			user.deviceId = deviceId;
+			await user.save();
+		}
+
+		user = await user.lean();
+
 		const userDevice = await UserModel.findOne({ mobileNo, deviceId });
+
+
 		if (!userDevice) {
             // return res.status(404).json({ message: 'Please login on same device or contact to app admin' });
 			return apiResponse.validationErrorWithData(res, "Please login on same device or contact to app admin", {}, 0)
