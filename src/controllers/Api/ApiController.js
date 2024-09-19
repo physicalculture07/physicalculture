@@ -94,6 +94,7 @@ const signUp = async(req, res) => {
 	try {
 		
 		const {firstName, lastName, mobileNo, password, deviceId} = req.body;
+		console.log("body------",req.body);
 		otp = '123456';
 		const existingUser = await UserModel.findOne({ $or: [{ mobileNo }] });
 		
