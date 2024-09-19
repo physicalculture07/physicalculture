@@ -114,6 +114,7 @@ const signUp = async(req, res) => {
         await newUser.save();
 		return apiResponse.successResponseWithData(res,"Registration Success.", newUser, 0);
 	} catch (err) {
+		console.log(err);
 		return apiResponse.ErrorResponse(res, err);
 	}
 };
