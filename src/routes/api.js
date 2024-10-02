@@ -32,6 +32,7 @@ router.get("/all_testseries", apiController.getAllTestSeries)
 router.get("/all_banner", apiController.getAllBanners)
 router.post("/buy_course", apiController.buyCourse)
 router.post("/download_class_video", apiController.downloadClassVideo);
+router.post("/contactus", apiController.contactUs);
 
 
 

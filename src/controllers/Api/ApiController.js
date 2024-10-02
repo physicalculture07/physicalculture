@@ -500,4 +500,19 @@ const downloadClassVideo = async (req, res, next) => {
 	}
 };
 
+const contactUs = async (req, res, next) => {
+	try {
+
+	  const updatedClass = {
+		"email": "physicalculture07@gmail.com",
+		"contactNumber":"9509417166",
+		"description":"To buy any course, please contact on this number"
+	  }
+	  return apiResponse.successResponseWithData(res, "Contact Us .", updatedClass);
+	} catch (error) {
+	//   res.status(500).json({ message: error.message });
+	  return apiResponse.validationErrorWithData(res, error.message, {}, 0)
+	}
+};
+
 module.exports = { signUp, login, verifyOtp, userProfile, updateUserProfile, getAllCourses, getClassByCourseId, getAllPdfNotes, getAllPreviousPapers, getAllSyllabus, getAllTestSeries, forgotPassword, resetPassword, buyCourse, getAllBanners, downloadClassVideo }
