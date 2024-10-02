@@ -515,4 +515,4 @@ const contactUs = async (req, res, next) => {
 	}
 };
 
-module.exports = { signUp, login, verifyOtp, userProfile, updateUserProfile, getAllCourses, getClassByCourseId, getAllPdfNotes, getAllPreviousPapers, getAllSyllabus, getAllTestSeries, forgotPassword, resetPassword, buyCourse, getAllBanners, downloadClassVideo }
+module.exports = { signUp, login, verifyOtp, userProfile, updateUserProfile, getAllCourses, getClassByCourseId, getAllPdfNotes, getAllPreviousPapers, getAllSyllabus, getAllTestSeries, forgotPassword, resetPassword, buyCourse, getAllBanners, downloadClassVideo, contactUs }
