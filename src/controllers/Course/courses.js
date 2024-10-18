@@ -1,5 +1,6 @@
 const CourseModel = require('../../models/CourseModel')
 const apiResponse = require("../../helpers/apiResponse");
+const { deleteFileFromS3 } = require('../../helpers/fileUploader');
 require('dotenv').config();
 
 

@@ -2,6 +2,7 @@
 
 const PreviousPapers = require('../../models/PreviousPaperModel');
 const apiResponse = require("../../helpers/apiResponse");
+const { deleteFileFromS3 } = require('../../helpers/fileUploader');
 
 
 

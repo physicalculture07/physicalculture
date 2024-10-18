@@ -1,5 +1,6 @@
 const Banner = require('../../models/BannerModel');
 const apiResponse = require("../../helpers/apiResponse");
+const { deleteFileFromS3 } = require('../../helpers/fileUploader');
 
 // Upload a new PDF note
 const createBanner = async (req, res, next) => {

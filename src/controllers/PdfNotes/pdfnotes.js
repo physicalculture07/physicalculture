@@ -1,5 +1,6 @@
 const PdfNotes = require('../../models/PdfNotesModel');
 const apiResponse = require("../../helpers/apiResponse");
+const { deleteFileFromS3 } = require('../../helpers/fileUploader');
 
 // Upload a new PDF note
 const createPdfNote = async (req, res, next) => {

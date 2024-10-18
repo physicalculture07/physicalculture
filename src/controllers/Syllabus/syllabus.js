@@ -1,5 +1,6 @@
 const SyllabusModel = require('../../models/SyllabusModel');
 const apiResponse = require("../../helpers/apiResponse");
+const { deleteFileFromS3 } = require('../../helpers/fileUploader');
 
 
 // Upload a new previous paper
