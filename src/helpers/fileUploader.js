@@ -177,7 +177,7 @@ const classUpload = multer({
         cb(new Error('Only PDF files are allowed for classNotes!'), false); // Reject non-PDF files
       }
     } else if (file.fieldname === 'classVideo') {
-      if (file.mimetype === 'video/mp4') {
+      if (file.mimetype === 'video/mp4' || file.mimetype === 'video/x-matroska') {
         cb(null, true); // Accept MP4 files
       } else {
         cb(new Error('Only MP4 files are allowed for classVideo!'), false); // Reject non-MP4 files
