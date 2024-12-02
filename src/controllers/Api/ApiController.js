@@ -17,6 +17,13 @@ const PurchaseModel = require("../../models/PurchaseModel");
 const BannerModel = require("../../models/BannerModel");
 const ObjectId = require("mongoose").Types.ObjectId;
 
+const twilio = require('twilio');
+
+// Twilio Credentials
+const accountSid = process.env.TWILIO_ACCOUNT_SID; // Get from Twilio Console
+const authToken = process.env.TWILIO_ACCOUNT_TOKEN;  // Get from Twilio Console
+const client = twilio(accountSid, authToken);
+
 
 
 // const TrackModel = require("../../models/TrackModel");
@@ -119,6 +126,10 @@ const signUp = async(req, res) => {
 	}
 };
 
+function generateOTP() {
+	return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
 const login = async(req, res) => {
 	const { mobileNo, password, deviceId } = req.body;
 	console.log("body------",req.body);
@@ -154,8 +165,10 @@ const login = async(req, res) => {
 
 		if(!user.isMobileVerified){
 			// otp sent logic goes here
-			user.otp = '123456';
+			let gotp = generateOTP();
+			user.otp = gotp;
 			user.save();
+			sendOTP(`'+91'${mobileNo}`, gotp);
 
 			return apiResponse.successResponseWithData(res,"please verify your mobile number", {is_otp: false}, 0);
 			
@@ -384,8 +397,10 @@ const forgotPassword = async (req, res, next) => {
 
 		
 			// otp sent logic goes here
-		userDevice.otp = '123456';
+		let gotp = generateOTP()
+		userDevice.otp = gotp;
 		userDevice.save();
+		sendOTP(`'+91'${mobileNo}`, gotp);
 
 		return apiResponse.successResponseWithData(res,"otp sent sucessfully", 0);
 		
@@ -443,8 +458,6 @@ const buyCourse = async (req, res, next) => {
 	
 	const course = await CourseModel.findById(courseId);
 	if (!course) {
-	//   throw new Error("Course not found");
-	//   return res.status(404).json({ message: 'Course not found' });
 	  return apiResponse.validationErrorWithData(res, "Course not found", {}, 0)
 	}
   
@@ -514,5 +527,19 @@ const contactUs = async (req, res, next) => {
 	  return apiResponse.validationErrorWithData(res, error.message, {}, 0)
 	}
 };
+
+async function sendOTP(to, otp) {
+	try {
+	  const message = await client.messages.create({
+		body: `Your OTP is ${otp}. Please use this to verify your account.`,
+		from: '+1(775) 551-7344', // Replace with your Twilio number
+		to: to, // Indian number, e.g., +919876543210
+	  });
+	  console.log('OTP Sent:', message.sid);
+	} catch (error) {
+	  console.error('Error sending OTP:', error.message);
+	}
+  }
+//   sendOTP('+918619252075', '112233');
 
 module.exports = { signUp, login, verifyOtp, userProfile, updateUserProfile, getAllCourses, getClassByCourseId, getAllPdfNotes, getAllPreviousPapers, getAllSyllabus, getAllTestSeries, forgotPassword, resetPassword, buyCourse, getAllBanners, downloadClassVideo, contactUs }
