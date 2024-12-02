@@ -386,21 +386,21 @@ const forgotPassword = async (req, res, next) => {
 
         if (!user) {
             // return res.status(404).json({ message: 'User not found' });
-			return apiResponse.validationErrorWithData(res, "User not found", {}, 0)
+			return apiResponse.notFoundUserResponse(res, "User not found", {}, 0)
         }
 
-		const userDevice = await UserModel.findOne({ mobileNo, deviceId });
-		if (!userDevice) {
-            // return res.status(404).json({ message: 'Please login on same device or contact to app admin' });
-			return apiResponse.validationErrorWithData(res, "Please login on same device or contact to app admin", {}, 0)
-        }
+		// const userDevice = await UserModel.findOne({ mobileNo, deviceId });
+		// if (!userDevice) {
+        //     // return res.status(404).json({ message: 'Please login on same device or contact to app admin' });
+		// 	return apiResponse.notFoundUserResponse(res, "Please login on same device or contact to app admin", {}, 0)
+        // }
 
 		
 			// otp sent logic goes here
 		let gotp = generateOTP()
 		userDevice.otp = gotp;
 		userDevice.save();
-		sendOTP(`'+91'${mobileNo}`, gotp);
+		// sendOTP(`'+91'${mobileNo}`, gotp);
 
 		return apiResponse.successResponseWithData(res,"otp sent sucessfully", 0);
 		
