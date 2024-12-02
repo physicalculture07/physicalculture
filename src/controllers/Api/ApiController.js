@@ -400,7 +400,7 @@ const forgotPassword = async (req, res, next) => {
 		let gotp = generateOTP()
 		userDevice.otp = gotp;
 		userDevice.save();
-		// sendOTP(`'+91'${mobileNo}`, gotp);
+		sendOTP(`'+91'${mobileNo}`, gotp);
 
 		return apiResponse.successResponseWithData(res,"otp sent sucessfully", 0);
 		
