@@ -2,6 +2,7 @@ const express = require('express');
 var router = express.Router();
 
 const apiController = require('../controllers/Api/ApiController');
+const apiControllerv2 = require('../controllers/Api/ApiControllerV2');
 const { isAuth } = require('../middlewares/auth');
 
 router.post("/signup", apiController.signUp);
@@ -11,7 +12,7 @@ router.post("/forgotpassword", apiController.forgotPassword);
 router.post("/resetpassword", apiController.resetPassword);
 
 router.post("/v2/signup", apiController.signUp);
-router.post("/v2/login", apiController.login);
+router.post("/v2/login", apiControllerv2.login);
 router.post("/v2/verifyotp", apiController.verifyOtp);
 router.post("/v2/forgotpassword", apiController.forgotPassword);
 router.post("/v2/resetpassword", apiController.resetPassword);
