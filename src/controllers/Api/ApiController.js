@@ -508,6 +508,8 @@ const downloadClassVideo = async (req, res, next) => {
 	  const updatedClass = await existingClass.save();
 	  return apiResponse.successResponseWithData(res, "Class List.", updatedClass);
 	} catch (error) {
+		console.log(error);
+		
 	//   res.status(500).json({ message: error.message });
 	  return apiResponse.validationErrorWithData(res, error.message, {}, 0)
 	}
