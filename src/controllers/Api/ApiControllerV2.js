@@ -285,7 +285,7 @@ const getAllCourses = async (req, res, next) => {
 	  if (CourseData.length > 0) {
 		return apiResponse.successResponseWithData(res, "Course List with User Purchase Details.", CourseData);
 	  } else {
-		return apiResponse.notFoundResponse(res, "Course not found");
+		return apiResponse.notFoundDataSucessResponse(res, "Course not found");
 	  }
   
 	} catch (err) {
@@ -314,7 +314,7 @@ const getAllPdfNotes = async (req, res, next) => {
 
 			return apiResponse.successResponseWithData(res, "Notes List.", pdfNotesModel);
 		} else {
-			return apiResponse.notFoundResponse(res, "Notes not found");
+			return apiResponse.notFoundDataSucessResponse(res, "Notes not found");
 		}
 
 	} catch (err) {
@@ -332,7 +332,7 @@ const getAllPreviousPapers = async (req, res, next) => {
 
 			return apiResponse.successResponseWithData(res, "Previous Papers List.", previousPaperModel);
 		} else {
-			return apiResponse.notFoundResponse(res, "Previous Papers not found");
+			return apiResponse.notFoundDataSucessResponse(res, "Previous Papers not found");
 		}
 
 	} catch (err) {
@@ -350,7 +350,7 @@ const getAllSyllabus = async (req, res, next) => {
 
 			return apiResponse.successResponseWithData(res, "Syllabus List.", syllabusModel);
 		} else {
-			return apiResponse.notFoundResponse(res, "Syllabus not found");
+			return apiResponse.notFoundDataSucessResponse(res, "Syllabus not found");
 		}
 
 	} catch (err) {
@@ -368,7 +368,7 @@ const getAllTestSeries = async (req, res, next) => {
 
 			return apiResponse.successResponseWithData(res, "Test Series List.", testSeriesModel);
 		} else {
-			return apiResponse.notFoundResponse(res, "Test Series not found");
+			return apiResponse.notFoundDataSucessResponse(res, "Test Series not found");
 		}
 
 	} catch (err) {
@@ -482,7 +482,7 @@ const getAllBanners = async (req, res, next) => {
 
 			return apiResponse.successResponseWithData(res, "Banner List.", BannerData);
 		} else {
-			return apiResponse.notFoundResponse(res, "Banner not found");
+			return apiResponse.notFoundDataSucessResponse(res, "Banner not found");
 		}
 
 	} catch (err) {
@@ -518,7 +518,7 @@ const contactUs = async (req, res, next) => {
 
 	  const updatedClass = {
 		"email": "physicalculture07@gmail.com",
-		"contactNumber":"9509417166",
+		"contactNumber":"9549363524",
 		"description":"To buy any course, please contact on this number"
 	  }
 	  return apiResponse.successResponseWithData(res, "Contact Us .", updatedClass);

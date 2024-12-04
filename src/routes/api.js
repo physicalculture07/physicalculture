@@ -11,11 +11,11 @@ router.post("/verifyotp", apiController.verifyOtp);
 router.post("/forgotpassword", apiController.forgotPassword);
 router.post("/resetpassword", apiController.resetPassword);
 
-router.post("/v2/signup", apiController.signUp);
+router.post("/v2/signup", apiControllerv2.signUp);
 router.post("/v2/login", apiControllerv2.login);
-router.post("/v2/verifyotp", apiController.verifyOtp);
-router.post("/v2/forgotpassword", apiController.forgotPassword);
-router.post("/v2/resetpassword", apiController.resetPassword);
+router.post("/v2/verifyotp", apiControllerv2.verifyOtp);
+router.post("/v2/forgotpassword", apiControllerv2.forgotPassword);
+router.post("/v2/resetpassword", apiControllerv2.resetPassword);
 
 // router.get("/user_profile",isAuth, apiController.userProfile);
 // router.post("/update_user_profile",isAuth, apiController.updateUserProfile);
@@ -42,18 +42,18 @@ router.post("/buy_course", apiController.buyCourse)
 router.post("/download_class_video", apiController.downloadClassVideo);
 router.get("/contactus", apiController.contactUs);
 
-router.get("/v2/user_profile", isAuth, apiController.userProfile);
-router.post("/v2/update_user_profile", isAuth, apiController.updateUserProfile);
-router.get("/v2/all_courses", isAuth, apiController.getAllCourses)
-router.get("/v2/get_classesbycourse/:id",isAuth,  apiController.getClassByCourseId)
-router.get("/v2/all_notes",isAuth,  apiController.getAllPdfNotes)
-router.get("/v2/all_previous_papers",isAuth,  apiController.getAllPreviousPapers)
-router.get("/v2/all_syllabus",isAuth, apiController.getAllSyllabus)
-router.get("/v2/all_testseries", isAuth,apiController.getAllTestSeries)
-router.get("/v2/all_banner", apiController.getAllBanners)
-router.post("/v2/buy_course",isAuth, apiController.buyCourse)
-router.post("/v2/download_class_video", apiController.downloadClassVideo);
-router.get("/v2/contactus", apiController.contactUs);
+router.get("/v2/user_profile", isAuth, apiControllerv2.userProfile);
+router.post("/v2/update_user_profile", isAuth, apiControllerv2.updateUserProfile);
+router.get("/v2/all_courses", isAuth, apiControllerv2.getAllCourses)
+router.get("/v2/get_classesbycourse/:id",isAuth,  apiControllerv2.getClassByCourseId)
+router.get("/v2/all_notes",isAuth,  apiControllerv2.getAllPdfNotes)
+router.get("/v2/all_previous_papers",isAuth,  apiControllerv2.getAllPreviousPapers)
+router.get("/v2/all_syllabus",isAuth, apiControllerv2.getAllSyllabus)
+router.get("/v2/all_testseries", isAuth,apiControllerv2.getAllTestSeries)
+router.get("/v2/all_banner", apiControllerv2.getAllBanners)
+router.post("/v2/buy_course",isAuth, apiControllerv2.buyCourse)
+router.post("/v2/download_class_video", apiControllerv2.downloadClassVideo);
+router.get("/v2/contactus", apiControllerv2.contactUs);
 
 
 

@@ -48,6 +48,16 @@ exports.notFoundResponse = function (res, msg) {
 	return res.status(404).json(data);
 };
 
+exports.notFoundDataSucessResponse = function (res, msg) {
+	var data = {
+		status: 0,
+		isSessionExists: 1,
+		message: msg,
+		data: []
+	};
+	return res.status(400).json(data);
+};
+
 exports.notFoundUserResponse = function (res, msg) {
 	var data = {
 		status: 0,
