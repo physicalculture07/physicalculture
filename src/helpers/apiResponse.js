@@ -50,12 +50,12 @@ exports.notFoundResponse = function (res, msg) {
 
 exports.notFoundDataSucessResponse = function (res, msg) {
 	var data = {
-		status: 0,
+		status: 1,
 		isSessionExists: 1,
 		message: msg,
 		data: []
 	};
-	return res.status(400).json(data);
+	return res.status(200).json(data);
 };
 
 exports.notFoundUserResponse = function (res, msg) {
