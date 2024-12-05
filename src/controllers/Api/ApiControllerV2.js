@@ -518,7 +518,7 @@ const contactUs = async (req, res, next) => {
 
 	  const updatedClass = {
 		"email": "physicalculture07@gmail.com",
-		"contactNumber":"9549363524",
+		"contactNumber":"9649383886",
 		"description":"To buy any course, please contact on this number"
 	  }
 	  return apiResponse.successResponseWithData(res, "Contact Us .", updatedClass);
