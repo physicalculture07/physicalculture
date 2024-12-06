@@ -15,6 +15,7 @@ const SyllabusModel = require("../../models/SyllabusModel");
 const TestSeriesModel = require("../../models/TestSeriesModel");
 const PurchaseModel = require("../../models/PurchaseModel");
 const BannerModel = require("../../models/BannerModel");
+const NewsModel = require("../../models/NewsModel");
 const ObjectId = require("mongoose").Types.ObjectId;
 
 const twilio = require('twilio');
@@ -542,4 +543,22 @@ async function sendOTP(to, otp) {
   }
 //   sendOTP('+918619252075', '112233');
 
-module.exports = { signUp, login, verifyOtp, userProfile, updateUserProfile, getAllCourses, getClassByCourseId, getAllPdfNotes, getAllPreviousPapers, getAllSyllabus, getAllTestSeries, forgotPassword, resetPassword, buyCourse, getAllBanners, downloadClassVideo, contactUs }
+const getAllNews = async (req, res, next) => {
+	try {
+
+		const newsModel = await NewsModel.find().lean()
+
+		if (newsModel.length > 0) {
+
+			return apiResponse.successResponseWithData(res, "News List.", newsModel);
+		} else {
+			return apiResponse.notFoundDataSucessResponse(res, "News not found");
+		}
+
+	} catch (err) {
+		console.log(err)
+		return apiResponse.ErrorResponse(res, err);
+	};
+};
+
+module.exports = { signUp, login, verifyOtp, userProfile, updateUserProfile, getAllCourses, getClassByCourseId, getAllPdfNotes, getAllPreviousPapers, getAllSyllabus, getAllTestSeries, forgotPassword, resetPassword, buyCourse, getAllBanners, downloadClassVideo, contactUs, getAllNews }

@@ -54,6 +54,7 @@ router.get("/v2/all_banner", apiControllerv2.getAllBanners)
 router.post("/v2/buy_course",isAuth, apiControllerv2.buyCourse)
 router.post("/v2/download_class_video", apiControllerv2.downloadClassVideo);
 router.get("/v2/contactus", apiControllerv2.contactUs);
+router.get("/v2/all_news", isAuth,apiControllerv2.getAllNews)
 
 
 
