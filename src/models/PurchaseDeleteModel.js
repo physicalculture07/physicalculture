@@ -13,4 +13,4 @@ var purchaseSchema = new Schema({
   deviceId:{ type: String, required: false }
 }, { timestamps: true });
 
-module.exports = mongoose.model("Purchase", purchaseSchema);
+module.exports = mongoose.model("PurchaseDelete", purchaseSchema);

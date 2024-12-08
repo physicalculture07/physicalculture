@@ -19,6 +19,7 @@ const previouspaper = require("../controllers/PreviousPaper/previouspaper");
 const syllabus = require("../controllers/Syllabus/syllabus");
 const testseries = require("../controllers/TestSeries/testseries");
 const userAdminController = require("../controllers/User/AuthController");
+const purchasecourse = require("../controllers/Purchase/purchase");
 const { validateClassUpload } = require("../middlewares/filevalidation");
 
 var router = express.Router();
@@ -302,6 +303,14 @@ router.put(
   banners.updateBannerById
 );
 router.delete("/remove_banners/:id", banners.deleteBannerById);
+
+
+router.get("/buy_course", purchasecourse.getPurchasedCourses)
+router.get("/getPurchasedCoursesById/:id", purchasecourse.getPurchasedCoursesById)
+router.put("/edit_purchase/:id", purchasecourse.updatePurchaseForUser)
+router.post("/add_course_to_user", purchasecourse.addCourseToUser)
+router.delete("/delete_purchase/:id", purchasecourse.delete_purchase);
+
 
 
 module.exports = router;
