@@ -49,7 +49,7 @@ const isAuth = async(req, res, next) => {
             next();
         } else {
             console.log("Invalid token");
-            return apiResponse.unauthorizedResponse(res, "Invalid token.");
+            return apiResponse.successResponseforAdmin(res, "Invalid token.");
         }
     } catch (err) {
         // Access Denied
