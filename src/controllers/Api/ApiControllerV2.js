@@ -382,17 +382,21 @@ const getAllTestSeries = async (req, res, next) => {
 
 const forgotPassword = async (req, res, next) => {
 	const { mobileNo, deviceId } = req.body;
+	console.log("forgot api hit-----1");
+	
 
     try {
         // Check if the user exists
         const user = await UserModel.findOne({ mobileNo }).lean();
+		console.log("forgot api hit-----2");
 
         if (!user) {
             // return res.status(404).json({ message: 'User not found' });
+			console.log("forgot api hit-----3");
 			return apiResponse.notFoundUserResponse(res, "User not found", {}, 0)
         }
 
-		// const userDevice = await UserModel.findOne({ mobileNo, deviceId });
+		const userDevice = await UserModel.findOne({ mobileNo });
 		// if (!userDevice) {
         //     // return res.status(404).json({ message: 'Please login on same device or contact to app admin' });
 		// 	return apiResponse.notFoundUserResponse(res, "Please login on same device or contact to app admin", {}, 0)
@@ -404,13 +408,14 @@ const forgotPassword = async (req, res, next) => {
 		userDevice.otp = gotp;
 		userDevice.save();
 		sendOTP(`'+91'${mobileNo}`, gotp);
-
+		console.log("forgot api hit-----4");
 		return apiResponse.successResponseWithData(res,"otp sent sucessfully", 0);
 		
         // Generate JWT token
         
     } catch (error) {
 		console.log(error);
+		console.log("forgot api hit-----5");
         // res.status(500).json({ message: 'Failed to login' });
 		return apiResponse.validationErrorWithData(res, "Failed to login", {}, 0)
     }
