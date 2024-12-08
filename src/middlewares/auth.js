@@ -37,7 +37,7 @@ const isAuth = async(req, res, next) => {
 
             const user = await UserModel.findOne({"_id": verified._id}).lean();
             if(!user.status){
-                return apiResponse.validationErrorWithData(res, "Account is deactive, please contact to Admin", {}, 0)
+                return apiResponse.unauthorizedResponse(res, "Account is deactive, please contact to Admin", {}, 0)
             }
 
             if(deviceId != verified.deviceId){
