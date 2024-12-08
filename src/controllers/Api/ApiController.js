@@ -391,7 +391,7 @@ const forgotPassword = async (req, res, next) => {
 			return apiResponse.notFoundUserResponse(res, "User not found", {}, 0)
         }
 
-		// const userDevice = await UserModel.findOne({ mobileNo, deviceId });
+		const userDevice = await UserModel.findOne({ mobileNo });
 		// if (!userDevice) {
         //     // return res.status(404).json({ message: 'Please login on same device or contact to app admin' });
 		// 	return apiResponse.notFoundUserResponse(res, "Please login on same device or contact to app admin", {}, 0)
