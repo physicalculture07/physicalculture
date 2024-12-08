@@ -142,7 +142,9 @@ const login = async(req, res) => {
         if (!user) {
             // return res.status(404).json({ message: 'User not found' });
 			return apiResponse.validationErrorWithData(res, "User not found", {}, 0)
-        }
+        }else if(!user.status){
+			return apiResponse.validationErrorWithData(res, "Account is deactive, please contact to Admin", {}, 0)
+		}
 
         // Validate password
         const isPasswordValid = await bcrypt.compare(password, user.password);
