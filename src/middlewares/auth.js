@@ -35,6 +35,11 @@ const isAuth = async(req, res, next) => {
             //     return res.status(404).json({ message: 'Invalid device' });
             // }
 
+            const user = await UserModel.findOne({"_id": verified._id}).lean();
+            if(!user.status){
+                return apiResponse.validationErrorWithData(res, "Account is deactive, please contact to Admin", {}, 0)
+            }
+
             if(deviceId != verified.deviceId){
                 // return res.status(404).json({ message: 'Invalid device' });
                 console.log("Invalid device");
