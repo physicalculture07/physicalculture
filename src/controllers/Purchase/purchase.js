@@ -1,5 +1,3 @@
-const PurchaseCourseModel = require('../../models/PurchaseCourseModel')
-const PurchaseCourseHistoryModel = require('../../models/PurchaseCourseHistoryModel')
 const PurchaseModel = require('../../models/PurchaseModel')
 
 const apiResponse = require("../../helpers/apiResponse");
