@@ -193,36 +193,46 @@ const login = async(req, res) => {
 const verifyOtp = async(req, res, next) => {
 	try {
 		const { mobileNo, otp, deviceId } = req.body;
+
+		console.log("otp 00--", req.body);
+		
 		
 		// const checkUserExists =await UserModel.findOne({ mobileNo, deviceId });
 		const checkUserExists =await UserModel.findOne({ mobileNo });
+		console.log("otp---1", checkUserExists);
+		
 		
 		if (checkUserExists) {
+			console.log("otp---2", checkUserExists);
 			
 			if(checkUserExists.status) {
+				console.log("otp---3", checkUserExists);
 				
 				if(checkUserExists.otp == otp){
-
+					console.log("otp---4", checkUserExists);
 					if(!checkUserExists.isMobileVerified){
-
+						console.log("otp---5", checkUserExists);
 						checkUserExists.isMobileVerified = 1;
-						checkUserExists.save();
+						await checkUserExists.save();
 
 					}
 					const user = checkUserExists.toObject();
 					const token = generateToken(user);
-
+					console.log("otp---6", checkUserExists);
 					// Return token and user details
 					return apiResponse.successResponseWithData(res,"login Success.", data={token, user: { _id: user._id, firstName: user.firstName, lastName: user.lastName }, is_otp:false}, 0);
 
 				}else{
+					console.log("otp---7", "Please enter correct otp");
 					return apiResponse.unauthorizedResponse(res, "Please enter correct otp.");
 				}
 			}else {
+				console.log("otp---8", "Account is not active. Please contact admin.");
 				return apiResponse.unauthorizedResponse(res, "Account is not active. Please contact admin.");
 			}	
 			
 		}else{
+			console.log("otp---9", "User not found.");
 			return apiResponse.successResponse(res,"User not found.", "");
 		}
 		
