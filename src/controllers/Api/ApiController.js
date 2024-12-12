@@ -287,7 +287,7 @@ const getAllCourses = async (req, res, next) => {
 	  if (CourseData.length > 0) {
 		return apiResponse.successResponseWithData(res, "Course List with User Purchase Details.", CourseData);
 	  } else {
-		return apiResponse.notFoundResponse(res, "Course not found");
+		return apiResponse.notFoundDataSucessResponse(res, "Course not found");
 	  }
   
 	} catch (err) {
@@ -299,7 +299,7 @@ const getAllCourses = async (req, res, next) => {
 const getClassByCourseId = async (req, res) => {
 	try {
 	  const classData = await ClassModel.find({courseId:req.params.id});
-	  if (!classData) return apiResponse.notFoundResponse(res, "Class not found");
+	  if (!classData) return apiResponse.notFoundDataSucessResponse(res, "Class not found");
 	  return apiResponse.successResponseWithData(res, "Class List.", classData);
 	} catch (err) {
 	  res.status(400).json({ error: err.message });
@@ -316,7 +316,7 @@ const getAllPdfNotes = async (req, res, next) => {
 
 			return apiResponse.successResponseWithData(res, "Notes List.", pdfNotesModel);
 		} else {
-			return apiResponse.notFoundResponse(res, "Notes not found");
+			return apiResponse.notFoundDataSucessResponse(res, "Notes not found");
 		}
 
 	} catch (err) {
@@ -334,7 +334,7 @@ const getAllPreviousPapers = async (req, res, next) => {
 
 			return apiResponse.successResponseWithData(res, "Previous Papers List.", previousPaperModel);
 		} else {
-			return apiResponse.notFoundResponse(res, "Previous Papers not found");
+			return apiResponse.notFoundDataSucessResponse(res, "Previous Papers not found");
 		}
 
 	} catch (err) {
@@ -352,7 +352,7 @@ const getAllSyllabus = async (req, res, next) => {
 
 			return apiResponse.successResponseWithData(res, "Syllabus List.", syllabusModel);
 		} else {
-			return apiResponse.notFoundResponse(res, "Syllabus not found");
+			return apiResponse.notFoundDataSucessResponse(res, "Syllabus not found");
 		}
 
 	} catch (err) {
@@ -370,7 +370,7 @@ const getAllTestSeries = async (req, res, next) => {
 
 			return apiResponse.successResponseWithData(res, "Test Series List.", testSeriesModel);
 		} else {
-			return apiResponse.notFoundResponse(res, "Test Series not found");
+			return apiResponse.notFoundDataSucessResponse(res, "Test Series not found");
 		}
 
 	} catch (err) {
@@ -484,7 +484,7 @@ const getAllBanners = async (req, res, next) => {
 
 			return apiResponse.successResponseWithData(res, "Banner List.", BannerData);
 		} else {
-			return apiResponse.notFoundResponse(res, "Banner not found");
+			return apiResponse.notFoundDataSucessResponse(res, "Banner not found");
 		}
 
 	} catch (err) {
