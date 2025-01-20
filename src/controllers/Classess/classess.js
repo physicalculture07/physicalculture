@@ -107,7 +107,7 @@ const getClassById = async (req, res) => {
 const createClass = async (req, res, next) => {
 	
 	try {
-	  const { courseId, className,classDescription,classType } = req.body;
+	  const { courseId,chapterId, className,classDescription,classType } = req.body;
 	  const classVideo = req.files['classVideo'] ? req.files['classVideo'][0].location : null;
 	  const classImage = req.files['classImage'] ? req.files['classImage'][0].location : null;
 	  const classNotes = req.files['classNotes'] ? req.files['classNotes'][0].location : null;
@@ -120,6 +120,7 @@ const createClass = async (req, res, next) => {
 		// Create new class
 		const newClass = new ClassModel({
 			courseId,
+			chapterId,
 			className,
 			classDescription,
 			classType,
@@ -134,6 +135,7 @@ const createClass = async (req, res, next) => {
 		// Create new class
 		const newClass = new ClassModel({
 			courseId,
+			chapterId,
 			className,
 			classDescription,
 			classVideo:req.files['classVideo'][0].key,
@@ -146,6 +148,7 @@ const createClass = async (req, res, next) => {
 		// Create new class
 		const newClass = new ClassModel({
 			courseId,
+			chapterId,
 			className,
 			classDescription,
 			classVideo:null,
@@ -158,6 +161,7 @@ const createClass = async (req, res, next) => {
 		// Create new class
 		const newClass = new ClassModel({
 			courseId,
+			chapterId,
 			className,
 			classDescription,
 			classVideo,
@@ -178,7 +182,7 @@ const createClass = async (req, res, next) => {
 //   /classes/:id  put
 const updateClassesById = async (req, res, next) => {
 	try {
-	  const { courseId, className, classDescription, classType } = req.body;
+	  const { courseId, chapterId, className, classDescription, classType } = req.body;
 	  const classVideo = req.files['classVideo'] ? req.files['classVideo'][0].key : null;
 	  const classImage = req.files['classImage'] ? req.files['classImage'][0].key : null;
 	  const classNotes = req.files['classNotes'] ? req.files['classNotes'][0].key : null;
@@ -190,6 +194,7 @@ const updateClassesById = async (req, res, next) => {
   
 	  // Update courseId and className if provided
 	  if (courseId) existingClass.courseId = courseId;
+	  if (chapterId) existingClass.chapterId = chapterId;
 	  if (className) existingClass.className = className;
 	  if (classDescription) existingClass.classDescription = classDescription;
 	  if (classType) existingClass.classType = classType;

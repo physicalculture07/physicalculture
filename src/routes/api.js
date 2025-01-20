@@ -3,6 +3,7 @@ var router = express.Router();
 
 const apiController = require('../controllers/Api/ApiController');
 const apiControllerv2 = require('../controllers/Api/ApiControllerV2');
+const apiControllerv3 = require('../controllers/Api/ApiControllerV3');
 const { isAuth } = require('../middlewares/auth');
 
 // router.post("/signup", apiController.signUp);
@@ -76,6 +77,12 @@ router.post("/v2/buy_course",isAuth, apiControllerv2.buyCourse)
 router.post("/v2/download_class_video", apiControllerv2.downloadClassVideo);
 router.get("/v2/contactus", apiControllerv2.contactUs);
 router.get("/v2/all_news", isAuth,apiControllerv2.getAllNews)
+
+router.post("/v3/allChapters", apiControllerv3.getAllChapters)
+router.post("/v3/allChaptersByCourse", apiControllerv3.getAllChaptersByCourse)
+router.post("/v3/allChaptersClasses", apiControllerv3.getChapterClassByCourseId)
+
+
 
 
 

@@ -9,9 +9,11 @@ const {
   classNotesUpload,
   courseUpload,
   bannerUpload,
+  chapterUpload
 } = require("../helpers/fileUploader");
 
 const courses = require("../controllers/Course/courses");
+const chapter = require("../controllers/Chapter/chapter");
 const classes = require("../controllers/Classess/classess");
 const pdfnotes = require("../controllers/PdfNotes/pdfnotes");
 const banners = require("../controllers/Banner/banner");
@@ -310,6 +312,46 @@ router.get("/getPurchasedCoursesById/:id", purchasecourse.getPurchasedCoursesByI
 router.put("/edit_purchase/:id", purchasecourse.updatePurchaseForUser)
 router.post("/add_course_to_user", purchasecourse.addCourseToUser)
 router.delete("/delete_purchase/:id", purchasecourse.delete_purchase);
+
+// chapters route
+router.get("/all_chapter", chapter.getChapter);
+// router.post("/create_course", courses.createCourse);
+router.post(
+  "/create_chapter",
+  (req, res, next) => {
+    chapterUpload.fields([
+      { name: "chapterImage", maxCount: 1 }
+    ])(req, res, (err) => {
+      if (err) {
+        // If a Multer error occurred, return it to the client
+        return res.status(400).json({ message: err.message, status: false });
+      }
+      // Proceed to the next middleware or route handler
+      next();
+    });
+  },
+  chapter.createChapter
+);
+// router.put("/create_chapter/:id", chapter.updateCourse);
+router.put(
+  "/update-chapter/:id",
+  (req, res, next) => {
+    chapterUpload.fields([
+      { name: "chapterImage", maxCount: 1 }
+    ])(req, res, (err) => {
+      if (err) {
+        // If a Multer error occurred, return it to the client
+        return res.status(400).json({ message: err.message, status: false });
+      }
+      // Proceed to the next middleware or route handler
+      next();
+    });
+  },
+  chapter.updateChapter
+);
+router.get("/all_chapter/:id", chapter.getChapterbyId);
+router.get("/get_chapters_by_course/:id", chapter.getChaptersbyCourseId);
+router.delete("/remove_chapter/:id", chapter.deleteChapter);
 
 
 

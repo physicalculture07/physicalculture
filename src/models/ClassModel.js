@@ -5,6 +5,7 @@ var Schema = mongoose.Schema;
 var classSchema = new Schema({
 	// courseId: { type: String, required: true },
 	courseId: { type: Schema.Types.ObjectId, ref: 'Course', required: true },
+	chapterId: { type: Schema.Types.ObjectId, ref: 'Chapter', required: true },
 	className: { type: String, required: true },
 	classDescription: { type: String, required: true },
 	classType: { type: String, required: true, default:"Paid" },
