@@ -64,23 +64,23 @@ router.post("/download_class_video",isAuth,  apiControllerv2.downloadClassVideo)
 router.get("/contactus",isAuth,  apiControllerv2.contactUs);
 router.get("/all_news",isAuth, apiControllerv2.getAllNews)
 
-router.get("/v2/user_profile", isAuth, apiControllerv2.userProfile);
-router.post("/v2/update_user_profile", isAuth, apiControllerv2.updateUserProfile);
-router.get("/v2/all_courses", isAuth, apiControllerv2.getAllCourses)
-router.get("/v2/get_classesbycourse/:id",isAuth,  apiControllerv2.getClassByCourseId)
-router.get("/v2/all_notes",isAuth,  apiControllerv2.getAllPdfNotes)
-router.get("/v2/all_previous_papers",isAuth,  apiControllerv2.getAllPreviousPapers)
-router.get("/v2/all_syllabus",isAuth, apiControllerv2.getAllSyllabus)
-router.get("/v2/all_testseries", isAuth,apiControllerv2.getAllTestSeries)
+router.get("/v2/user_profile",  apiControllerv2.userProfile);
+router.post("/v2/update_user_profile",  apiControllerv2.updateUserProfile);
+router.get("/v2/all_courses",  apiControllerv2.getAllCourses)
+router.get("/v2/get_classesbycourse/:id",  apiControllerv2.getClassByCourseId)
+router.get("/v2/all_notes",  apiControllerv2.getAllPdfNotes)
+router.get("/v2/all_previous_papers",  apiControllerv2.getAllPreviousPapers)
+router.get("/v2/all_syllabus", apiControllerv2.getAllSyllabus)
+router.get("/v2/all_testseries", apiControllerv2.getAllTestSeries)
 router.get("/v2/all_banner", apiControllerv2.getAllBanners)
-router.post("/v2/buy_course",isAuth, apiControllerv2.buyCourse)
+router.post("/v2/buy_course", apiControllerv2.buyCourse)
 router.post("/v2/download_class_video", apiControllerv2.downloadClassVideo);
 router.get("/v2/contactus", apiControllerv2.contactUs);
-router.get("/v2/all_news", isAuth,apiControllerv2.getAllNews)
+router.get("/v2/all_news", apiControllerv2.getAllNews)
 
 router.post("/v2/allChapters", apiControllerv3.getAllChapters)
 router.post("/v2/allChaptersByCourse", apiControllerv3.getAllChaptersByCourse)
-router.post("/v2/allChaptersClasses", apiControllerv3.getChapterClassByCourseId)
+router.post("/v/allChaptersClasses", apiControllerv3.getChapterClassByCourseId)
 
 
 
