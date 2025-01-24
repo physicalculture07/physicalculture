@@ -78,9 +78,9 @@ router.post("/v2/download_class_video", apiControllerv2.downloadClassVideo);
 router.get("/v2/contactus", apiControllerv2.contactUs);
 router.get("/v2/all_news", isAuth,apiControllerv2.getAllNews)
 
-router.post("/v3/allChapters", apiControllerv3.getAllChapters)
-router.post("/v3/allChaptersByCourse", apiControllerv3.getAllChaptersByCourse)
-router.post("/v3/allChaptersClasses", apiControllerv3.getChapterClassByCourseId)
+router.post("/v2/allChapters", apiControllerv3.getAllChapters)
+router.post("/v2/allChaptersByCourse", apiControllerv3.getAllChaptersByCourse)
+router.post("/v2/allChaptersClasses", apiControllerv3.getChapterClassByCourseId)
 
 
 
