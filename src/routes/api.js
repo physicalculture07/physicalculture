@@ -19,7 +19,7 @@ router.post("/forgotpassword", apiControllerv2.forgotPassword);
 router.post("/resetpassword", apiControllerv2.resetPassword);
 
 router.post("/v2/signup", apiControllerv2.signUp);
-router.post("/v2/login", apiControllerv2.login);
+router.post("/v2/login", apiControllerv3.login);
 router.post("/v2/verifyotp", apiControllerv2.verifyOtp);
 router.post("/v2/forgotpassword", apiControllerv2.forgotPassword);
 router.post("/v2/resetpassword", apiControllerv2.resetPassword);

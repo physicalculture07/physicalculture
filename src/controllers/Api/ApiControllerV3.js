@@ -162,10 +162,10 @@ const login = async(req, res) => {
 
 
 
-		if (user.deviceId != deviceId) {
-            // return res.status(404).json({ message: 'Please login on same device or contact to app admin' });
-			return apiResponse.validationErrorWithData(res, "Please login on same device or contact to app admin", {}, 0)
-        }
+		// if (user.deviceId != deviceId) {
+        //     // return res.status(404).json({ message: 'Please login on same device or contact to app admin' });
+		// 	return apiResponse.validationErrorWithData(res, "Please login on same device or contact to app admin", {}, 0)
+        // }
 
 		if(!user.isMobileVerified){
 			// otp sent logic goes here
