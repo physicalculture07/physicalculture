@@ -80,7 +80,7 @@ router.get("/v2/all_news", apiControllerv2.getAllNews)
 
 router.post("/v2/allChapters", apiControllerv3.getAllChapters)
 router.post("/v2/allChaptersByCourse", apiControllerv3.getAllChaptersByCourse)
-router.post("/v/allChaptersClasses", apiControllerv3.getChapterClassByCourseId)
+router.post("/v2/allChaptersClasses", apiControllerv3.getChapterClassByCourseId)
 
 
 
