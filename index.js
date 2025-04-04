@@ -10,6 +10,7 @@ const mongoose = require('mongoose');
 
 require('dotenv').config({ path: path.resolve(__dirname, './.env') });
 const apiRoRouter = require("./src/routes/api")
+const apinewRouter = require("./src/routes/apinew")
 const adminRouter = require("./src/routes/admin")
 
 const app = express();
@@ -22,6 +23,7 @@ app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use("/uploads", express.static(path.join(__dirname, '../uploads')));
 app.use("/", apiRoRouter)
+app.use("/v2/", apinewRouter)
 app.use("/admin/", adminRouter)
 
 // process.on('uncaughtException', (err) => {

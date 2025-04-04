@@ -64,6 +64,11 @@ router.post("/download_class_video",isAuth,  apiControllerv2.downloadClassVideo)
 router.get("/contactus",isAuth,  apiControllerv2.contactUs);
 router.get("/all_news",isAuth, apiControllerv2.getAllNews)
 
+router.post("/allChapters", apiControllerv3.getAllChapters)
+router.post("/allChaptersByCourse", apiControllerv3.getAllChaptersByCourse)
+router.post("/allChaptersClasses", apiControllerv3.getChapterClassByCourseId)
+
+
 router.get("/v2/user_profile",  apiControllerv2.userProfile);
 router.post("/v2/update_user_profile",  apiControllerv2.updateUserProfile);
 router.get("/v2/all_courses",  apiControllerv2.getAllCourses)
