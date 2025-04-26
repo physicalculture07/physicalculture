@@ -16,10 +16,11 @@
 const mongoose = require("mongoose");
 
 const QuestionSchema = new mongoose.Schema({
-    text: { type: String, required: true },
+    question: { type: String, required: true },
     options: [
         {
-            text: { type: String, required: true },
+            _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
+            option: { type: String, required: true },
             isCorrect: { type: Boolean, required: true }
         }
     ],

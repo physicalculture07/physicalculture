@@ -91,26 +91,18 @@ exports.buyTestSeries = async (req, res) => {
 // Get test questions
 exports.getTestQuestions = async (req, res) => {
     try {
-        const test = await Test.findById(req.params.testId);
+        const test = await Test.findById(req.params.testId).lean();
         if (!test) return res.status(404).json({ error: "Test not found" });
+        
+        return apiResponse.successResponseWithData(res, "Test list.", test);
 
-        res.json({ 
-            totalMarks: test.totalMarks, 
-            passingMarks: test.passingMarks, 
-            negativeMarking: test.questions.some(q => q.negativeMarks > 0),
-            data: test.questions.map(q => ({
-                question: q.text,
-                options: q.options.map(o => o.text),
-                correctAnswer: q.options.find(o => o.isCorrect)?.text
-            }))
-        });
     } catch (err) {
         res.status(500).json({ error: "Server Error" });
     }
 };
 
 // Submit test and calculate score
-exports.submitTest = async (req, res) => {
+exports.submitTest123 = async (req, res) => {
     const { userId, responses } = req.body;
     try {
         const test = await Test.findById(req.params.testId);
@@ -120,7 +112,7 @@ exports.submitTest = async (req, res) => {
         const questionResults = [];
 
         for (const response of responses) {
-            const question = test.questions.find(q => q._id.equals(response.questionId));
+            const question = test.questions.find(q => q._id.equals(response.question_id));
             if (!question) continue;
 
             const selectedOption = question.options.find(opt => opt.text === response.selectedOption);
@@ -129,7 +121,7 @@ exports.submitTest = async (req, res) => {
             totalScore += isCorrect ? question.marks : -question.negativeMarks;
 
             questionResults.push({
-                questionId: response.questionId,
+                question_id: response.question_id,
                 selectedOption: response.selectedOption,
                 isCorrect
             });
@@ -151,6 +143,59 @@ exports.submitTest = async (req, res) => {
             data: questionResults
         });
     } catch (err) {
+        res.status(500).json({ error: "Server Error" });
+    }
+};
+
+exports.submitTest = async (req, res) => {
+    const { userId, testId, examresponse } = req.body;
+    try {
+        const test = await Test.findById(testId);
+        if (!test) return res.status(404).json({ error: "Test not found" });
+
+        let totalScore = 0;
+        const questionResults = [];
+
+        for (const response of examresponse) {
+            const question = test.questions.find(q => q._id.equals(response.question_id));
+            if (!question) continue;
+
+            let isCorrect = false;
+
+            if (response.action === 'submitted' && response.selected_option_id) {
+                const selectedOption = question.options.find(opt => opt._id.equals(response.selected_option_id));
+                isCorrect = selectedOption ? selectedOption.isCorrect : false;
+                totalScore += isCorrect ? question.marks : -question.negativeMarks;
+            }
+            else if (response.action === 'skipped') {
+                // No marks for skipped question
+            }
+
+            questionResults.push({
+                question_id: response.question_id,
+                selected_option_id: response.selected_option_id,
+                action: response.action,
+                isCorrect: response.action === 'skipped' ? null : isCorrect
+            });
+        }
+
+        await UserTestAttempt.create({
+            userId,
+            testId: test._id,
+            questions: questionResults,
+            totalScore,
+            completedAt: new Date()
+        });
+
+        res.json({ 
+            message: "Test submitted successfully", 
+            totalMarks: test.totalMarks,
+            passingMarks: test.passingMarks,
+            negativeMarking: test.questions.some(q => q.negativeMarks > 0),
+            data: questionResults
+        });
+    } catch (err) {
+        console.error(err);
         res.status(500).json({ error: "Server Error" });
     }
 };
