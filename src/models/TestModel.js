@@ -30,6 +30,8 @@ const QuestionSchema = new mongoose.Schema({
 const TestSchema = new mongoose.Schema({
     seriesId: { type: mongoose.Schema.Types.ObjectId, ref: "TestSeries", required: true },
     title: { type: String, required: true },
+    description: { type: String },
+    image: { type: String, required: true },
     duration: { type: Number, required: true }, // in minutes
     totalMarks: { type: Number, required: true },
     passingMarks: { type: Number, required: true },
