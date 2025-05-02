@@ -147,7 +147,7 @@ exports.submitTest123 = async (req, res) => {
     }
 };
 
-exports.submitTest = async (req, res) => {
+exports.submitTest11111 = async (req, res) => {
     const { userId, testId, examresponse } = req.body;
     try {
         const test = await Test.findById(testId);
@@ -199,3 +199,72 @@ exports.submitTest = async (req, res) => {
         res.status(500).json({ error: "Server Error" });
     }
 };
+
+exports.submitTest = async (req, res) => {
+    const { userId, testId, examresponse } = req.body;
+
+    try {
+        const test = await Test.findById(testId);
+        if (!test) return res.status(404).json({ error: "Test not found" });
+
+        let totalMarksObtained = 0;
+        let correctAnswers = 0;
+        let incorrectAnswers = 0;
+        let skippedQuestions = 0;
+        const answers = [];
+
+        for (const response of examresponse) {
+            const question = test.questions.find(q => q._id.equals(response.question_id));
+            if (!question) continue;
+
+            let isCorrect = false;
+
+            if (response.action === 'submitted' && response.selected_option_id) {
+                const selectedOption = question.options.find(opt => opt._id.equals(response.selected_option_id));
+                isCorrect = selectedOption ? selectedOption.isCorrect : false;
+
+                if (isCorrect) {
+                    correctAnswers++;
+                    totalMarksObtained += question.marks;
+                } else {
+                    incorrectAnswers++;
+                    totalMarksObtained -= question.negativeMarks;
+                }
+            } else if (response.action === 'skipped') {
+                skippedQuestions++;
+            }
+
+            answers.push({
+                questionId: response.question_id,
+                selectedOptionId: response.selected_option_id || null,
+                action: response.action,
+                status: response.action === 'skipped' ? 'skipped' : 'submitted'
+            });
+        }
+
+        await UserTestAttempt.create({
+            userId,
+            testId: test._id,
+            questions: answers,
+            totalScore: totalMarksObtained,
+            completedAt: new Date()
+        });
+
+        return apiResponse.successResponseWithData(res, "Result ", {
+            userId,
+            Total_Questions: test.questions.length,
+            Correct_Answers: correctAnswers,
+            Incorrect_Answers: incorrectAnswers,
+            Skipped_Questions: skippedQuestions,
+            Total_Marks_Obtained: totalMarksObtained,
+            answer: answers
+        });
+
+        res.json();
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Server Error" });
+    }
+};
+
