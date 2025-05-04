@@ -4,6 +4,7 @@ const Question = require("../../models/QuestionModel");
 const UserPurchase = require("../../models/UserPurchaseTest");
 const UserTestAttempt = require("../../models/UserTestAttemptModel");
 const apiResponse = require("../../helpers/apiResponse");
+const jwt = require("jsonwebtoken");
 
 
 // List all test series
@@ -200,71 +201,121 @@ exports.submitTest11111 = async (req, res) => {
     }
 };
 
+// exports.submitTest = async (req, res) => {
+//     const { userId, testId, examresponse } = req.body;
+    
+
+//     try {
+//         const test = await Test.findById(testId);
+//         if (!test) return res.status(404).json({ error: "Test not found" });
+
+//         let totalMarksObtained = 0;
+//         let correctAnswers = 0;
+//         let incorrectAnswers = 0;
+//         let skippedQuestions = 0;
+//         const answers = [];
+
+//         for (const response of examresponse) {
+//             const question = test.questions.find(q => q._id.equals(response.question_id));
+//             if (!question) continue;
+
+//             let isCorrect = false;
+
+//             if (response.action === 'submitted' && response.selected_option_id) {
+//                 const selectedOption = question.options.find(opt => opt._id.equals(response.selected_option_id));
+//                 isCorrect = selectedOption ? selectedOption.isCorrect : false;
+
+//                 if (isCorrect) {
+//                     correctAnswers++;
+//                     totalMarksObtained += question.marks;
+//                 } else {
+//                     incorrectAnswers++;
+//                     totalMarksObtained -= question.negativeMarks;
+//                 }
+//             } else if (response.action === 'skipped') {
+//                 skippedQuestions++;
+//             }
+
+//             answers.push({
+//                 questionId: response.question_id,
+//                 selectedOptionId: response.selected_option_id || null,
+//                 action: response.action,
+//                 status: response.action === 'skipped' ? 'skipped' : 'submitted'
+//             });
+//         }
+
+//         await UserTestAttempt.create({
+//             userId,
+//             testId: test._id,
+//             questions: answers,
+//             totalScore: totalMarksObtained,
+//             completedAt: new Date()
+//         });
+
+//         return apiResponse.successResponseWithData(res, "Result ", {
+//             userId,
+//             Total_Questions: test.questions.length,
+//             Correct_Answers: correctAnswers,
+//             Incorrect_Answers: incorrectAnswers,
+//             Skipped_Questions: skippedQuestions,
+//             Total_Marks_Obtained: totalMarksObtained,
+//             answer: answers
+//         });
+
+//         res.json();
+
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).json({ error: "Server Error" });
+//     }
+// };
+
 exports.submitTest = async (req, res) => {
-    const { userId, testId, examresponse } = req.body;
+    const testId = req.params.testId;
+    const {
+        Total_Questions,
+        Correct_Answers,
+        Incorrect_Answers,
+        Skipped_Questions,
+        Total_Marks_Obtained,
+        answer
+    } = req.body;
 
     try {
         const test = await Test.findById(testId);
-        if (!test) return res.status(404).json({ error: "Test not found" });
-
-        let totalMarksObtained = 0;
-        let correctAnswers = 0;
-        let incorrectAnswers = 0;
-        let skippedQuestions = 0;
-        const answers = [];
-
-        for (const response of examresponse) {
-            const question = test.questions.find(q => q._id.equals(response.question_id));
-            if (!question) continue;
-
-            let isCorrect = false;
-
-            if (response.action === 'submitted' && response.selected_option_id) {
-                const selectedOption = question.options.find(opt => opt._id.equals(response.selected_option_id));
-                isCorrect = selectedOption ? selectedOption.isCorrect : false;
-
-                if (isCorrect) {
-                    correctAnswers++;
-                    totalMarksObtained += question.marks;
-                } else {
-                    incorrectAnswers++;
-                    totalMarksObtained -= question.negativeMarks;
-                }
-            } else if (response.action === 'skipped') {
-                skippedQuestions++;
-            }
-
-            answers.push({
-                questionId: response.question_id,
-                selectedOptionId: response.selected_option_id || null,
-                action: response.action,
-                status: response.action === 'skipped' ? 'skipped' : 'submitted'
-            });
+        if (!test) {
+            return res.status(404).json({ error: "Test not found" });
         }
+        const token = req.headers.authorization;
+        const decoded = jwt.decode(token);
+        const userId = decoded._id;
+
+        // const userId = req.user?.id || req.body.userId; // Assuming you have user ID from auth or body
 
         await UserTestAttempt.create({
             userId,
             testId: test._id,
-            questions: answers,
-            totalScore: totalMarksObtained,
+            questions: answer.map(ans => ({
+                questionId: ans.questionId,
+                selectedOptionId: ans.selectedOptionId || null,
+                action: ans.action,
+                status: ans.status
+            })),
+            totalScore: Total_Marks_Obtained,
             completedAt: new Date()
         });
 
-        return apiResponse.successResponseWithData(res, "Result ", {
+        return apiResponse.successResponseWithData(res, "Test submitted successfully", {
             userId,
-            Total_Questions: test.questions.length,
-            Correct_Answers: correctAnswers,
-            Incorrect_Answers: incorrectAnswers,
-            Skipped_Questions: skippedQuestions,
-            Total_Marks_Obtained: totalMarksObtained,
-            answer: answers
+            Total_Questions,
+            Correct_Answers,
+            Incorrect_Answers,
+            Skipped_Questions,
+            Total_Marks_Obtained,
+            answer
         });
-
-        res.json();
-
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: "Server Error" });
+        return res.status(500).json({ error: "Server Error" });
     }
 };
-
