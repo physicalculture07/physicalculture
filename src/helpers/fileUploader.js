@@ -29,7 +29,10 @@ const cloudFolder = {
 
 
   CourseFiles:"courseimages",
-  BannerFiles:"banners"
+  BannerFiles:"banners",
+
+  TestSeriesNew:"testseriesnew",
+  TestNew:"testimages"
 };
 
 const s3Client = new S3Client({
@@ -306,10 +309,35 @@ const deleteFileFromS3 = async (key) => {
 };
 
 
+const testSeriesNewUpload = multer({
+  storage: multerS3({
+      s3: s3Client,
+      bucket: 'physicalcultureclassess',
+      acl: 'public-read', // Set the appropriate permissions
+      contentType: multerS3.AUTO_CONTENT_TYPE,
+      key: function (req, file, cb) {
+          cb(null, `${cloudFolder.TestSeriesNew}/${Date.now()}_${file.originalname}`); // Customize the file key
+      }
+  })
+});
+
+const testNewUpload = multer({
+  storage: multerS3({
+      s3: s3Client,
+      bucket: 'physicalcultureclassess',
+      acl: 'public-read', // Set the appropriate permissions
+      contentType: multerS3.AUTO_CONTENT_TYPE,
+      key: function (req, file, cb) {
+          cb(null, `${cloudFolder.TestNew}/${Date.now()}_${file.originalname}`); // Customize the file key
+      }
+  })
+});
 
 
 
 
 
 
-module.exports = { fileUploadDirectoryCheck, pdfNotesUpload, classUpload, testSeriesPdfUpload, syllabusPdfUpload, previousPapersUpload, deleteFileFromS3, courseUpload, bannerUpload, chapterUpload };
+
+
+module.exports = { fileUploadDirectoryCheck, pdfNotesUpload, classUpload, testSeriesPdfUpload, syllabusPdfUpload, previousPapersUpload, deleteFileFromS3, courseUpload, bannerUpload, chapterUpload, testSeriesNewUpload, testNewUpload };

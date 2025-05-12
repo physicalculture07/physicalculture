@@ -9,7 +9,9 @@ const {
   classNotesUpload,
   courseUpload,
   bannerUpload,
-  chapterUpload
+  chapterUpload,
+  testSeriesNewUpload,
+  testNewUpload
 } = require("../helpers/fileUploader");
 
 const courses = require("../controllers/Course/courses");
@@ -22,6 +24,10 @@ const syllabus = require("../controllers/Syllabus/syllabus");
 const testseries = require("../controllers/TestSeries/testseries");
 const userAdminController = require("../controllers/User/AuthController");
 const purchasecourse = require("../controllers/Purchase/purchase");
+
+const testseriesnew = require("../controllers/TestSeriesNew/testseriesnew");
+const test = require("../controllers/TestSeriesNew/test");
+
 const { validateClassUpload } = require("../middlewares/filevalidation");
 
 var router = express.Router();
@@ -352,6 +358,67 @@ router.put(
 router.get("/all_chapter/:id", chapter.getChapterbyId);
 router.get("/get_chapters_by_course/:id", chapter.getChaptersbyCourseId);
 router.delete("/remove_chapter/:id", chapter.deleteChapter);
+
+
+
+// New test series route
+router.get("/all_newtestseries", testseriesnew.getNewTestSeries);
+// router.post("/create_course", testseriesnew.createCourse);
+router.post(
+  "/create_newtestseries",
+  (req, res, next) => {
+    testSeriesNewUpload.fields([
+      { name: "image", maxCount: 1 }
+    ])(req, res, (err) => {
+      if (err) {
+        // If a Multer error occurred, return it to the client
+        return res.status(400).json({ message: err.message, status: false });
+      }
+      // Proceed to the next middleware or route handler
+      next();
+    });
+  },
+  testseriesnew.createNewTestSeries
+);
+// router.put("/create_course/:id", testseriesnew.updateCourse);
+router.put(
+  "/create_newtestseries/:id",
+  (req, res, next) => {
+    testSeriesNewUpload.fields([
+      { name: "image", maxCount: 1 }
+    ])(req, res, (err) => {
+      if (err) {
+        // If a Multer error occurred, return it to the client
+        return res.status(400).json({ message: err.message, status: false });
+      }
+      // Proceed to the next middleware or route handler
+      next();
+    });
+  },
+  testseriesnew.updateNewTestSeries
+);
+router.get("/all_testseriesnew/:id", testseriesnew.getNewTestSeriesbyId);
+router.delete("/remove_newtestseries/:id", testseriesnew.deleteNewTestSeries);
+
+
+// Tests model
+router.post(
+  "/create_newtest",
+  (req, res, next) => {
+    testNewUpload.fields([
+      { name: "image", maxCount: 1 }
+    ])(req, res, (err) => {
+      if (err) {
+        // If a Multer error occurred, return it to the client
+        return res.status(400).json({ message: err.message, status: false });
+      }
+      // Proceed to the next middleware or route handler
+      next();
+    });
+  },
+  test.createTest
+);
+
 
 
 
