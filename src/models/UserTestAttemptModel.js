@@ -19,7 +19,7 @@ const UserTestAttemptSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, required: true },
     testId: { type: mongoose.Schema.Types.ObjectId, ref: "Test", required: true },
     questions: [
-        { questionId: mongoose.Schema.Types.ObjectId, selectedOption: String, isCorrect: Boolean }
+        { questionId: String, selectedOption: String, isCorrect: Boolean }
     ],
     totalScore: { type: Number, required: true },
     completedAt: { type: Date, default: Date.now }
