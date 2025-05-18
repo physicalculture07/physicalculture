@@ -22,6 +22,8 @@ const UserTestAttemptSchema = new mongoose.Schema({
         { questionId: String, selectedOption: String, isCorrect: Boolean }
     ],
     totalScore: { type: Number, required: true },
+    allData:{},
     completedAt: { type: Date, default: Date.now }
+    
 });
 module.exports = mongoose.model("UserTestAttempt", UserTestAttemptSchema);

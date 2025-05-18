@@ -305,6 +305,7 @@ exports.submitTest = async (req, res) => {
                 status: ans.status
             })),
             totalScore: Total_Marks_Obtained,
+            allData: req.body,
             completedAt: new Date()
         });
 
