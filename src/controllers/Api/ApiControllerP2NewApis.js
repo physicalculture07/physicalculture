@@ -94,6 +94,8 @@ exports.buyTestSeries = async (req, res) => {
 
 // Get test questions
 exports.getTestQuestions = async (req, res) => {
+    console.log("sdfsdfdsfsd--");
+    
     try {
         const test = await Test.findById(req.params.testId).lean();
         if (!test) return res.status(404).json({ error: "Test not found" });
