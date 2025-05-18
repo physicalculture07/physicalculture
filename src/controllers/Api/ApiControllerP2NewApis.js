@@ -282,6 +282,8 @@ exports.submitTest = async (req, res) => {
         answer
     } = req.body;
 
+    console.log(req.body)
+
     try {
         const test = await Test.findById(testId);
         if (!test) {
