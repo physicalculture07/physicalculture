@@ -94,10 +94,12 @@ exports.buyTestSeries = async (req, res) => {
 
 // Get test questions
 exports.getTestQuestions = async (req, res) => {
-    console.log("sdfsdfdsfsd--");
+    console.log("sdfsdfdsfsd--", req.params);
     
     try {
         const test = await Test.findById(req.params.testId).lean();
+        console.log(test);
+        
         if (!test) return res.status(404).json({ error: "Test not found" });
         
         return apiResponse.successResponseWithData(res, "Test list.", test);
