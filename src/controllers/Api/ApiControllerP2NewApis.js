@@ -47,6 +47,8 @@ exports.getTestsBySeries = async (req, res) => {
 // Start a test (only if purchased or free)
 exports.startTest = async (req, res) => {
     const { userId } = req.body;
+    console.log("sdfsdf");
+    
     try {
         const test = await Test.findById(req.params.testId);
         if (!test) return res.status(404).json({ error: "Test not found" });
