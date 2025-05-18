@@ -93,7 +93,7 @@ exports.buyTestSeries = async (req, res) => {
 };
 
 // Get test questions
-exports.getTestQuestions = async (req, res) => {
+exports.getTestQuestions_old = async (req, res) => {
     console.log("sdfsdfdsfsd--", req.params);
     
     try {
@@ -110,6 +110,38 @@ exports.getTestQuestions = async (req, res) => {
         res.status(500).json({ error: "Server Error" });
     }
 };
+
+exports.getTestQuestions = async (req, res) => {
+    console.log("Fetching test questions for:", req.params);
+
+    try {
+        const test = await Test.findById(req.params.testId).lean();
+
+        if (!test) {
+            return res.status(404).json({ error: "Test not found" });
+        }
+
+        // Format questions
+        const formattedQuestions = test.questions.map(q => ({
+            _id: q._id.toString(),
+            questionId: q._id.toString(),
+            question: q.question,
+            options: q.options,
+            marks: q.marks,
+            negativeMarks: q.negativeMarks,
+        }));
+
+        return apiResponse.successResponseWithData(res, "Test questions list.", {
+            ...test,
+            questions: formattedQuestions,
+        });
+
+    } catch (err) {
+        console.error("Error fetching test:", err);
+        return res.status(500).json({ error: "Server Error" });
+    }
+};
+
 
 // Submit test and calculate score
 exports.submitTest123 = async (req, res) => {
