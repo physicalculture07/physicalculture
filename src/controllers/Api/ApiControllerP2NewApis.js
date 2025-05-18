@@ -103,6 +103,8 @@ exports.getTestQuestions = async (req, res) => {
         return apiResponse.successResponseWithData(res, "Test list.", test);
 
     } catch (err) {
+        console.log(err);
+        
         res.status(500).json({ error: "Server Error" });
     }
 };
