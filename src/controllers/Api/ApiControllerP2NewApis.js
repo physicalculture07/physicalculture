@@ -37,6 +37,8 @@ exports.getTestsBySeries = async (req, res) => {
         }
         // res.json(tests);
     } catch (err) {
+        console.log(err);
+        
         // res.status(500).json({ error: "Server Error" });
         return apiResponse.ErrorResponse(res, err);
     }
