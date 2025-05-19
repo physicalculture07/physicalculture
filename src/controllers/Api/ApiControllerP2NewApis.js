@@ -147,7 +147,7 @@ exports.getTestQuestions = async (req, res) => {
             question: q.question,
             options: q.options,
             marks: q.marks,
-            negativeMarks: q.negativeMarks,
+            negativeMarks: 1//q.negativeMarks,
         }));
 
         return apiResponse.successResponseWithData(res, "Test questions list.", {
