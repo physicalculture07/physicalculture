@@ -33,9 +33,22 @@ exports.getTestsBySeries = async (req, res) => {
     try {
         const tests = await Test.find({ seriesId: req.params.seriesId });
         if (tests.length > 0) {
-            console.log(tests);
+            // console.log(tests);
+
+            // Set negativeMarks to 1 if not defined
+            const updatedTests = tests.map(test => {
+                const updatedQuestions = test.questions.map(q => ({
+                    ...q.toObject?.() || q, // handle Mongoose documents safely
+                    negativeMarks: q.negativeMarks !== undefined ? 1 : 1,
+                }));
+
+                return {
+                    ...test.toObject?.() || test,
+                    questions: updatedQuestions,
+                };
+            });
             
-            return apiResponse.successResponseWithData(res, "Test list.", tests);
+            return apiResponse.successResponseWithData(res, "Test list.", updatedTests);
         } else {
             return apiResponse.notFoundDataSucessResponse(res, "Tests list not found");
         }
