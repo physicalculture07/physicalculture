@@ -28,9 +28,13 @@ exports.getAllTestSeries = async (req, res) => {
 
 // Get all tests for a particular test series
 exports.getTestsBySeries = async (req, res) => {
+    console.log("gettestByseries");
+    
     try {
         const tests = await Test.find({ seriesId: req.params.seriesId });
         if (tests.length > 0) {
+            console.log(tests);
+            
             return apiResponse.successResponseWithData(res, "Test list.", tests);
         } else {
             return apiResponse.notFoundDataSucessResponse(res, "Tests list not found");
