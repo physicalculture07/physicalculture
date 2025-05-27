@@ -13,6 +13,8 @@ const jwt = require("jsonwebtoken");
 // List all test series
 exports.getAllTestSeries = async (req, res) => {
     try {
+        console.log("getAllTestSeries", req);
+        
         const series = await TestSeries.find();
         if (series.length > 0) {
             return apiResponse.successResponseWithData(res, "Test series list.", series);

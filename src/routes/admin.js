@@ -24,6 +24,7 @@ const syllabus = require("../controllers/Syllabus/syllabus");
 const testseries = require("../controllers/TestSeries/testseries");
 const userAdminController = require("../controllers/User/AuthController");
 const purchasecourse = require("../controllers/Purchase/purchase");
+const purchasetestseries = require("../controllers/PurchaseTestSeries/purchasetestseries");
 
 const testseriesnew = require("../controllers/TestSeriesNew/testseriesnew");
 const test = require("../controllers/TestSeriesNew/test");
@@ -402,6 +403,7 @@ router.delete("/remove_newtestseries/:id", testseriesnew.deleteNewTestSeries);
 
 
 // Tests model
+router.get("/alltests", test.getAllTests);
 router.post(
   "/create_newtest",
   (req, res, next) => {
@@ -419,7 +421,13 @@ router.post(
   test.createTest
 );
 
+router.delete("/remove_test/:id", test.deleteTest);
 
+router.get("/buy_testseries", purchasetestseries.getPurchasedTestSeries)
+router.get("/getPurchasedTestseriesById/:id", purchasetestseries.getPurchasedTestSeriesById)
+router.put("/edit_purchase_testseries/:id", purchasetestseries.updatePurchaseForUser)
+router.post("/add_testseries_to_user", purchasetestseries.addTestSeriesToUser)
+router.delete("/delete_purchase_testseries/:id", purchasetestseries.delete_purchase);
 
 
 module.exports = router;
