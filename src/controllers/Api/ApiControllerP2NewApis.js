@@ -11,9 +11,8 @@ const jwt = require("jsonwebtoken");
 // List all test series
 
 // List all test series
-exports.getAllTestSeries = async (req, res) => {
+exports.getAllTestSeries_old = async (req, res) => {
     try {
-        console.log("getAllTestSeries", req);
         
         const series = await TestSeries.find();
         if (series.length > 0) {
@@ -24,6 +23,51 @@ exports.getAllTestSeries = async (req, res) => {
         // res.json(series);
     } catch (err) {
         // res.status(500).json({ error: "Server Error" });
+        return apiResponse.ErrorResponse(res, err);
+    }
+};
+
+exports.getAllTestSeries = async (req, res) => {
+    try {
+        const token = req.headers.authorization;
+        const decoded = jwt.decode(token);
+        const userId = decoded._id;
+
+        const allSeries = await TestSeries.find();
+
+        const result = await Promise.all(allSeries.map(async (series) => {
+            let isFree = series.isFree;
+
+            // If not free, check if user has purchased
+            if (!isFree) {
+                const purchase = await UserPurchase.findOne({
+                    seriesId: series._id,
+                    userId,
+                    paymentStatus: "Completed" // Optional, if you want to ensure only paid purchases count
+                });
+
+                if (purchase) {
+                    isFree = true; // User has purchased, treat as free
+                }
+            }
+
+            return {
+                _id: series._id,
+                title: series.title,
+                description: series.description,
+                image: series.image,
+                price: series.price,
+                isFree, // Overridden value
+            };
+        }));
+
+        if (result.length > 0) {
+            return apiResponse.successResponseWithData(res, "Test series list.", result);
+        } else {
+            return apiResponse.notFoundDataSucessResponse(res, "Test series list not found");
+        }
+    } catch (err) {
+        console.error("Error in getAllTestSeries:", err);
         return apiResponse.ErrorResponse(res, err);
     }
 };
